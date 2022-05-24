@@ -1,0 +1,34 @@
+rootProject.name = 'mentoree'
+
+def file(dir, name) {
+    return file("${dir.absolutePath}/${name}")
+}
+
+["member", "mentoring", "reply", "common", "infra"].forEach(moduleName -> {
+    def moduleDir = file(rootDir, moduleName)
+    if(moduleDir.exists()) {
+        moduleDir.eachFile { subProjectDir ->
+            def buildFile = file(subProjectDir, "build.gradle")
+            if (buildFile.exists()) {
+                def projectName = ":${moduleName}-${subProjectDir.name}"
+
+                include projectName
+                project(projectName).projectDir = subProjectDir
+            }
+
+            [
+                "src/main/java/com/mentoree/",
+                "src/main/resources",
+                "src/test/java/com/mentoree/",
+                "src/test/resources",
+            ].forEach(src -> {
+                def srcDir = file(subProjectDir, src);
+                if(!srcDir.exists()) {
+                    srcDir.mkdirs()
+                }
+            })
+
+        }
+    }
+})
+

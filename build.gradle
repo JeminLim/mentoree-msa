@@ -1,0 +1,54 @@
+buildscript {
+    ext{
+        spring = "org.springframework"
+        boot = "${spring}.boot"
+        bootVersion = "2.7.0"
+        lombok = "org.projectlombok:lombok"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "$boot:spring-boot-gradle-plugin:$bootVersion"
+        classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: boot
+    apply plugin: "io.spring.dependency-management"
+
+    sourceCompatibility = 11
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        compileOnly{
+            extendsFrom annotationProcessor
+        }
+    }
+
+    dependencies {
+        compileOnly lombok
+        annotationProcessor lombok
+
+        testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: "com.vaadin.external.google", module:"android-json"
+        }
+        testImplementation 'org.springframework.security:spring-security-test'
+
+
+        if(project.name.contains('domain')) { //도메인 에서 사용될 의존성
+            implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+            implementation 'org.springframework.boot:spring-boot-starter-web'
+            implementation 'org.springframework.boot:spring-boot-devtools'
+            implementation 'org.springframework.boot:spring-boot-starter-validation'
+            runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+        }
+    }
+}
