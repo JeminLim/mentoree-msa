@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //== JWT 관련 ==//
+    implementation 'com.auth0:java-jwt:3.19.2'
+
+    implementation "org.springframework.boot:spring-boot-starter-security"
+}

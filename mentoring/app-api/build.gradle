@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+bootJar {
+    enabled = true
+}
+
+jar {
+    enabled = true
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2021.0.1")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+
+    /** spring web */
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    /** Discovery Client*/
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    /** spring security */
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    /** module */
+    implementation project(':mentoring-internal-member-client')
+    implementation project(':mentoring-service')
+    implementation project(':mentoring-domain-rds')
+    implementation project(':common-domain')
+
+
+}
