@@ -1,5 +1,6 @@
 package com.mentoree.mentoring.service;
 
+import com.mentoree.common.domain.BaseTimeEntity;
 import com.mentoree.common.domain.Category;
 import com.mentoree.mentoring.dto.ParticipatedProgramDto;
 import com.mentoree.mentoring.domain.entity.Participant;
@@ -14,6 +15,7 @@ import com.mentoree.mentoring.messagequeue.connect.ConnectProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +29,8 @@ public class ProgramService {
 
     private final ProgramRepository programRepository;
     private final ParticipantRepository participantRepository;
-    private final ConnectProducer connectProducer;
+    private final ConnectProducer<Program> programConnectProducer;
+    private final ConnectProducer<Participant> participantConnectProducer;
 
     private final int ALL_PROGRAM_PAGE_SIZE = 8;
     private final int RECOMMEND_PROGRAM_PAGE_SIZE = 8;
@@ -40,23 +43,26 @@ public class ProgramService {
 
     @Transactional
     public ParticipatedProgramDto createProgram(ProgramCreateDto createForm) {
+
+        //프로그램 저장
         createForm.setProgramRole(createForm.getMentor() ? ProgramRole.MENTOR.getKey() : ProgramRole.MENTEE.getKey());
-        Program toEntity = createForm.toEntity(Category.valueOf(createForm.getCategory()));
+        Program saveProgram = programRepository.save(createForm.toEntity(Category.valueOf(createForm.getCategory())));
+        programConnectProducer.send(programKafkaTopic, saveProgram);
 
-        Program save = (Program) connectProducer.send(programKafkaTopic, toEntity);
-
+        //참가자 저장
         Participant participant = Participant.builder()
-                .program(save)
+                .program(saveProgram)
                 .approval(true)
                 .isHost(true)
                 .memberId(createForm.getMemberId())
                 .role(ProgramRole.valueOf(createForm.getProgramRole()))
                 .build();
-        connectProducer.send(participantsKafkaTopic, participant);
+        Participant saveParticipant = participantRepository.save(participant);
+        participantConnectProducer.send(participantsKafkaTopic, saveParticipant);
 
         return ParticipatedProgramDto.builder()
-                .id(save.getId())
-                .title(save.getProgramName())
+                .id(saveProgram.getId())
+                .title(saveProgram.getProgramName())
                 .build();
     }
 

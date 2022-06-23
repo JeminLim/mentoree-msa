@@ -1,4 +1,4 @@
-package com.mentoree.kafka.utils;
+package com.mentoree.common.kafka.utils;
 
 import com.mentoree.common.domain.BaseTimeEntity;
 import lombok.AllArgsConstructor;

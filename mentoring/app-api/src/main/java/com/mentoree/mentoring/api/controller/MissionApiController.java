@@ -1,7 +1,7 @@
 package com.mentoree.mentoring.api.controller;
 
-import com.mentoree.mentoring.domain.dto.BoardInfoDto;
-import com.mentoree.mentoring.domain.dto.MissionInfoDto;
+import com.mentoree.mentoring.dto.BoardInfoDto;
+import com.mentoree.mentoring.dto.MissionInfoDto;
 import com.mentoree.mentoring.service.BoardService;
 import com.mentoree.mentoring.service.MissionService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class MissionApiController {
     private final MissionService missionService;
     private final BoardService boardService;
 
-    @GetMapping("/missions/list")
+    @GetMapping("/list")
     public ResponseEntity getMissionList(@RequestParam("programId") long programId,
                                          @RequestParam(value = "isOpen", defaultValue = "true") boolean isOpen) {
 
@@ -34,7 +34,7 @@ public class MissionApiController {
         return ResponseEntity.ok().body(data);
     }
 
-    @GetMapping("/missions/{missionId}")
+    @GetMapping("/{missionId}")
     public ResponseEntity getMissionInfo(@PathVariable("missionId") long missionId) {
 
         MissionInfoDto findMission = missionService.getMissionInfo(missionId);
@@ -46,7 +46,7 @@ public class MissionApiController {
         return ResponseEntity.ok().body(data);
     }
 
-    @PostMapping("/missions/new")
+    @PostMapping("/new")
     public ResponseEntity createMission(@RequestParam("programId") Long programId,
                                         @RequestBody MissionInfoDto missionDTO,
                                         BindingResult bindingResult) {

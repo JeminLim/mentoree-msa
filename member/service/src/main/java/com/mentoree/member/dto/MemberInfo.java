@@ -37,7 +37,7 @@ public class MemberInfo extends DataTransferObject {
         this.email = email;
         this.memberName = memberName;
         this.nickname = nickname;
-        this.interests = interests;
+        this.interests = interests == null ? new ArrayList<>() : interests;
         this.link = link;
         this.participatedProgramIdList = participatedProgramIdList;
     }

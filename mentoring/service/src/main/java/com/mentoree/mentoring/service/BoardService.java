@@ -1,5 +1,6 @@
 package com.mentoree.mentoring.service;
 
+import com.mentoree.mentoring.domain.entity.Board;
 import com.mentoree.mentoring.dto.BoardInfoDto;
 import com.mentoree.mentoring.domain.entity.Mission;
 import com.mentoree.mentoring.domain.repository.BoardRepository;
@@ -45,7 +46,9 @@ public class BoardService {
     public void writeBoard(BoardInfoDto boardInfoDto) {
         Mission mission = missionRepository.findById(boardInfoDto.getMissionId())
                 .orElseThrow(NoSuchElementException::new);
-        connectProducer.send(boardConnectTopic, boardInfoDto.toEntity(mission));
+        Board toEntity = boardInfoDto.toEntity(mission);
+        boardRepository.save(toEntity);
+        connectProducer.send(boardConnectTopic, toEntity);
     }
 
 }

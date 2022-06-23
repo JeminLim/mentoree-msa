@@ -41,19 +41,23 @@ public class ProgramApiController {
 
 
     //== 프로그램 리스트 ==//
-    @PostMapping("/list")
+    @GetMapping("/list")
     public ResponseEntity getMoreList(@RequestParam("page") Integer page, @RequestParam("memberId") Long memberId) {
         ResponseMember member = memberClient.getMember(memberId);
         List<ProgramInfoDto> programList = programService.getProgramList(page, member.getMemberId());
-        return ResponseEntity.ok().body(programList);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("program", programList);
+        return ResponseEntity.ok().body(responseBody);
     }
 
-    @PostMapping("/list/recommend")
+    @GetMapping("/list/recommend")
     public ResponseEntity getMoreRecommendList(@RequestParam("page") Integer page, @RequestParam("memberId") Long memberId) {
         ResponseMember member = memberClient.getMember(memberId);
         List<ProgramInfoDto> recommendProgramList =
                 programService.getRecommendProgramList(page, member.getMemberId(), member.getInterests());
-        return ResponseEntity.ok().body(recommendProgramList);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("program", recommendProgramList);
+        return ResponseEntity.ok().body(responseBody);
     }
 
     //== 프로그램 상세 정보 ==//

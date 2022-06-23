@@ -21,7 +21,6 @@ public class MemberService {
     public MemberInfo getMemberProfile(String email) {
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("유저를 못찾았슴다"));
-
         List<String> interestList = findMember.getInterest().stream()
                                     .map(mi -> mi.getCategory().getValue())
                                     .collect(Collectors.toList());

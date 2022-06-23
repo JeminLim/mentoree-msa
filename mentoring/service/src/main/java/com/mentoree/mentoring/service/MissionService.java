@@ -1,5 +1,6 @@
 package com.mentoree.mentoring.service;
 
+import com.mentoree.mentoring.domain.entity.Mission;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import com.mentoree.mentoring.domain.entity.Program;
 import com.mentoree.mentoring.domain.repository.MissionRepository;
@@ -33,6 +34,8 @@ public class MissionService {
 
     public void enrollMission(Long programId, MissionInfoDto missionInfoDto) {
         Program program = programRepository.findById(programId).orElseThrow(NoSuchElementException::new);
-        connectProducer.send(missionKafkaTopic, missionInfoDto.toEntity(program));
+        Mission toEntity = missionInfoDto.toEntity(program);
+        missionRepository.save(toEntity);
+        connectProducer.send(missionKafkaTopic, toEntity);
     }
 }

@@ -1,4 +1,4 @@
-package com.mentoree.kafka.utils;
+package com.mentoree.common.kafka.utils;
 
 public class SnakeConverter {
 

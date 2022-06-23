@@ -62,9 +62,11 @@ public class Member {
     }
 
     public void updateInterest(List<String> interestList) {
-        IntStream.range(0, interest.size()).forEach(index -> {
-            interest.get(index).updateCategory(Category.valueOf(interestList.get(index)));
-        });
+        if(interestList.size() > 0) {
+            IntStream.range(0, interest.size()).forEach(index -> {
+                interest.get(index).updateCategory(Category.valueOf(interestList.get(index)));
+            });
+        }
     }
 
     public void updateNickname(String nickname) { this.nickname = nickname;}

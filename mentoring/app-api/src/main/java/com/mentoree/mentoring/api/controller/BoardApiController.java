@@ -1,6 +1,6 @@
 package com.mentoree.mentoring.api.controller;
 
-import com.mentoree.mentoring.domain.dto.BoardInfoDto;
+import com.mentoree.mentoring.dto.BoardInfoDto;
 import com.mentoree.mentoring.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class BoardApiController {
 
     private final BoardService boardService;
 
-    @GetMapping("/boards/{boardId}")
+    @GetMapping("/{boardId}")
     public ResponseEntity getBoardInfo(@PathVariable("boardId") long boardId) {
         BoardInfoDto boardInfo = boardService.getBoardInfo(boardId);
         Map<String, Object> data = new HashMap<>();
@@ -28,7 +28,7 @@ public class BoardApiController {
         return ResponseEntity.ok().body(data);
     }
 
-    @PostMapping("/boards/new")
+    @PostMapping("/new")
     public ResponseEntity createBoard(@RequestParam("memberId") Long memberId,
                                       @Validated @RequestBody BoardInfoDto createRequest,
                                       BindingResult bindingResult) {
