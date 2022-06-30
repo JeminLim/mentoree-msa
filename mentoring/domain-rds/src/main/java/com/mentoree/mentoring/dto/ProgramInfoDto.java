@@ -2,7 +2,9 @@ package com.mentoree.mentoring.dto;
 
 import com.mentoree.common.domain.Category;
 import com.mentoree.common.domain.DataTransferObject;
+import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
+import com.mentoree.mentoring.domain.entity.ProgramRole;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -24,7 +27,7 @@ public class ProgramInfoDto extends DataTransferObject {
     private String title;
 
     @NotNull
-    private Category category;
+    private String category;
 
     @NotNull
     private int maxMember;
@@ -42,7 +45,7 @@ public class ProgramInfoDto extends DataTransferObject {
     private LocalDate dueDate;
 
     @Builder
-    public ProgramInfoDto(Long id, String title, Category category, String goal, int maxMember, List<String> mentor, String description, LocalDate dueDate) {
+    public ProgramInfoDto(Long id, String title, String category, String goal, int maxMember, List<String> mentor, String description, LocalDate dueDate) {
         this.id = id;
         this.title = title;
         this.category = category;
@@ -53,10 +56,24 @@ public class ProgramInfoDto extends DataTransferObject {
         this.dueDate = dueDate;
     }
 
+    public static ProgramInfoDto of(Program program) {
+        return ProgramInfoDto.builder()
+                .id(program.getId())
+                .title(program.getTitle())
+                .category(program.getCategory().getValue())
+                .maxMember(program.getMaxMember())
+                .goal(program.getGoal())
+                .description(program.getDescription())
+                .dueDate(program.getDueDate())
+                .mentor(program.getParticipants().stream().filter(p -> p.getRole() == ProgramRole.MENTOR)
+                        .map(Participant::getNickname).collect(Collectors.toList()))
+                .build();
+    }
+
     public Program toEntity() {
         return Program.builder()
-                .programName(title)
-                .category(category)
+                .title(title)
+                .category(Category.valueOf(category))
                 .description(description)
                 .dueDate(dueDate)
                 .maxMember(maxMember)

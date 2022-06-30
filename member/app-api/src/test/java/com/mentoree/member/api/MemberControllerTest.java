@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -84,7 +86,8 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.email").value("test@email.com"))
                 .andExpect(jsonPath("$.memberName").value("tester"))
                 .andExpect(jsonPath("$.nickname").value("testNick"))
-                .andExpect(jsonPath("$.link").value("link"));
+                .andExpect(jsonPath("$.link").value("link"))
+                .andDo(print());
     }
 
     @Test
@@ -110,7 +113,7 @@ public class MemberControllerTest {
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(content().string("Updated"));
+                .andExpect(jsonPath("$.result").value("success"));
     }
 
 }

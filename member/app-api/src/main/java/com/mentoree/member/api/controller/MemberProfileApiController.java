@@ -9,6 +9,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +33,9 @@ public class MemberProfileApiController {
             log.error("바인딩 에러 발생");
         }
         memberService.updateMemberProfile(updatedInfo);
-        return ResponseEntity.ok().body("Updated");
+        Map<String, Object> result = new HashMap<>();
+        result.put("result", "success");
+        return ResponseEntity.ok().body(result);
     }
 
 }

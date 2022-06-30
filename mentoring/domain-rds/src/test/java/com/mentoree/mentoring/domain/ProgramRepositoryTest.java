@@ -25,7 +25,7 @@ public class ProgramRepositoryTest {
     @BeforeEach
     public void Set_Up_Data() {
 
-        preProgram = Program.builder().programName("testProgram")
+        preProgram = Program.builder().title("testProgram")
                 .category(Category.ART)
                 .dueDate(LocalDate.now().plusDays(5))
                 .description("test")
@@ -40,7 +40,7 @@ public class ProgramRepositoryTest {
     public void 프로그램_생성_테스트_성공() {
 
         //given
-        Program newProgram = Program.builder().programName("newProgram")
+        Program newProgram = Program.builder().title("newProgram")
                 .category(Category.IT)
                 .dueDate(LocalDate.now().plusDays(5))
                 .description("testNewProgram")
@@ -62,7 +62,7 @@ public class ProgramRepositoryTest {
     void 프로그램_수정_테스트_성공() {
         //given
         String changeCategory = Category.EMPLOYMENT.toString();
-        String changeProgramName = "changedName";
+        String changeTitle = "changedName";
         String changeGoal = "changeGoal";
         int changeMaxMember = 2;
         String changeDescription = "changed Desc";
@@ -71,7 +71,7 @@ public class ProgramRepositoryTest {
 
         //when
         preProgram.changeCategory(changeCategory);
-        preProgram.changeProgramName(changeProgramName);
+        preProgram.changeTitle(changeTitle);
         preProgram.changeGoal(changeGoal);
         preProgram.changeMaxMember(changeMaxMember);
         preProgram.changeDescription(changeDescription);
@@ -82,7 +82,7 @@ public class ProgramRepositoryTest {
         //then
         assertThat(afterChange).isNotEmpty();
         assertThat(afterChange.get().getCategory()).isEqualTo(Category.EMPLOYMENT);
-        assertThat(afterChange.get().getProgramName()).isEqualTo(changeProgramName);
+        assertThat(afterChange.get().getTitle()).isEqualTo(changeTitle);
         assertThat(afterChange.get().getGoal()).isEqualTo(changeGoal);
         assertThat(afterChange.get().getMaxMember()).isEqualTo(changeMaxMember);
         assertThat(afterChange.get().getDescription()).isEqualTo(changeDescription);

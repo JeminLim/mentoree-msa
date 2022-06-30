@@ -6,7 +6,6 @@ import com.mentoree.mentoring.domain.entity.Mission;
 import com.mentoree.mentoring.domain.repository.BoardRepository;
 import com.mentoree.mentoring.domain.repository.MissionRepository;
 import com.mentoree.mentoring.domain.repository.ParticipantRepository;
-import com.mentoree.mentoring.messagequeue.connect.ConnectProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,10 +21,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MissionRepository missionRepository;
     private final ParticipantRepository participantRepository;
-    private final ConnectProducer connectProducer;
-
-    @Value("${kafka.topics.boards}")
-    private String boardConnectTopic;
 
     @Transactional(readOnly = true)
     public List<BoardInfoDto> getBoardList(Long missionId) {
@@ -48,7 +43,6 @@ public class BoardService {
                 .orElseThrow(NoSuchElementException::new);
         Board toEntity = boardInfoDto.toEntity(mission);
         boardRepository.save(toEntity);
-        connectProducer.send(boardConnectTopic, toEntity);
     }
 
 }

@@ -31,12 +31,8 @@ public class Participant extends BaseTimeEntity {
     private ProgramRole role;
 
     private boolean isHost;
-
     private boolean approval;
-
     private String message;
-
-    private LocalDateTime endDate;
 
     @Builder
     public Participant(Long memberId, String nickname, Program program, ProgramRole role, boolean isHost, boolean approval, String message) {

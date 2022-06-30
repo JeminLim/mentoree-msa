@@ -2,20 +2,12 @@ plugins {
     id 'java'
 }
 
-bootJar {
-    enabled = true
-}
-
-jar {
-    enabled = true
+ext {
+    set('springCloudVersion', "2021.0.1")
 }
 
 repositories {
     mavenCentral()
-}
-
-ext {
-    set('springCloudVersion', "2021.0.1")
 }
 
 dependencyManagement {
@@ -37,5 +29,6 @@ dependencies {
 
     /** module */
     implementation project(':member-service')
-
+    implementation project(':member-domain-rds')
+    implementation project(':common-domain')
 }

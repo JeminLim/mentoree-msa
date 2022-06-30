@@ -1,4 +1,4 @@
-package com.mentoree.reply.domain.infra;
+package com.mentoree.reply.domain.repository;
 
 import com.mentoree.reply.domain.dto.ReplyDto;
 import com.mentoree.reply.domain.entity.QReply;

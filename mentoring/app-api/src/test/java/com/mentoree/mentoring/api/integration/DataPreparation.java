@@ -1,4 +1,4 @@
-package com.mentoree.mentoring.common;
+package com.mentoree.mentoring.api.integration;
 
 import com.mentoree.common.domain.Category;
 import com.mentoree.mentoring.domain.entity.*;
@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class DataPreparation {
 
     @Autowired
@@ -29,7 +30,7 @@ public class DataPreparation {
 
     private Map<String, Object> entityMap = new HashMap<>();
 
-    public Map<String, Object> getEntity() {
+    public Map<String, Object> getData() {
         init();
         return this.entityMap;
     }
@@ -46,6 +47,16 @@ public class DataPreparation {
                 .build();
         Program savedProgram = programRepository.save(preProgram);
 
+        Program preProgramB = Program.builder()
+                .goal("testBGoal")
+                .maxMember(5)
+                .dueDate(LocalDate.now().plusDays(5))
+                .description("testBDesc")
+                .category(Category.LIFE)
+                .title("testProgramB")
+                .build();
+        Program savedProgramB = programRepository.save(preProgramB);
+
         Participant preParticipantA = Participant.builder()
                 .isHost(true)
                 .memberId(1L)
@@ -57,12 +68,13 @@ public class DataPreparation {
         Participant savedParticipantA = participantRepository.save(preParticipantA);
 
         Participant preParticipantB = Participant.builder()
-                .isHost(true)
+                .isHost(false)
                 .memberId(2L)
                 .approval(false)
                 .role(ProgramRole.MENTOR)
                 .program(preProgram)
-                .nickname("testNick")
+                .nickname("testNickB")
+                .message("want to join")
                 .build();
         Participant savedParticipantB = participantRepository.save(preParticipantB);
 
@@ -90,6 +102,7 @@ public class DataPreparation {
         Board savedBoard = boardRepository.save(preBoard);
 
         entityMap.put("programA", savedProgram);
+        entityMap.put("programB", savedProgramB);
         entityMap.put("missionA", savedMission);
         entityMap.put("missionB", savedMissionB);
         entityMap.put("boardA", savedBoard);

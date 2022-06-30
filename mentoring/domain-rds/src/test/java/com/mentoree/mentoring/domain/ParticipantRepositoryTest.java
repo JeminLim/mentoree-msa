@@ -75,7 +75,7 @@ public class ParticipantRepositoryTest {
         //given
         Program program = (Program) entity.get("programA");
         //when
-        boolean isApply = participantRepository.isApplicant(1L, program.getId()) > 0;
+        boolean isApply = participantRepository.countParticipantByMemberIdAndProgramId(1L, program.getId()) > 0;
         //then
         assertThat(isApply).isTrue();
     }
@@ -87,10 +87,10 @@ public class ParticipantRepositoryTest {
         // 지원자 멤버 ID -> 2
         Program program = (Program) entity.get("programA");
         //when
-        Optional<Participant> result =
-                participantRepository.findParticipantByProgramIdAndMemberId(2L, program.getId());
+        Participant result =
+                participantRepository.findApplicantByMemberIdAndProgramId(2L, program.getId());
         //then
-        assertThat(result).isNotEmpty();
+        assertThat(result).isNotNull();
     }
 
     @Test

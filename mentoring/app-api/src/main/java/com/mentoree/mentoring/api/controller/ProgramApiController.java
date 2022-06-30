@@ -5,7 +5,7 @@ import com.mentoree.mentoring.dto.ApplyRequestDto;
 import com.mentoree.mentoring.dto.ParticipatedProgramDto;
 import com.mentoree.mentoring.dto.ProgramCreateDto;
 import com.mentoree.mentoring.dto.ProgramInfoDto;
-import com.mentoree.mentoring.dto.ResponseMember;
+import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.service.ProgramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,9 @@ public class ProgramApiController {
             log.error("바인딩 에러 발생");
         }
         programService.applyProgram(applyRequest);
-        return ResponseEntity.ok().body("success");
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("result", "success");
+        return ResponseEntity.ok().body(responseBody);
     }
 
     //== 프로그램 참가자 관리 ==//
@@ -101,6 +103,7 @@ public class ProgramApiController {
     @PostMapping("/{programId}/applicants/accept")
     public ResponseEntity applicantAccept(@RequestBody ApplyRequestDto member,
                                           @PathVariable("programId") Long programId) {
+        // 로그인 멤버에 대한 정보 수신하는 것이 필요함
         if(!isHost(programId, member.getMemberId())) {
             log.error("권한이 없습니다.");
         }
@@ -116,6 +119,7 @@ public class ProgramApiController {
     public ResponseEntity applicantReject(@RequestBody ApplyRequestDto member,
                                           @PathVariable("programId") Long programId) {
         // 요청자 해당 프로그램 호스트 판별
+        // 로그인 멤버에 대한 정보 수신하는 것이 필요함
         if(!isHost(programId, member.getMemberId())) {
             log.error("권한 없음");
         }

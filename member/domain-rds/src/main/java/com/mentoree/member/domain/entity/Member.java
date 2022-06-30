@@ -64,7 +64,8 @@ public class Member {
     public void updateInterest(List<String> interestList) {
         if(interestList.size() > 0) {
             IntStream.range(0, interest.size()).forEach(index -> {
-                interest.get(index).updateCategory(Category.valueOf(interestList.get(index)));
+                if(index < interestList.size())
+                    interest.get(index).updateCategory(Category.valueOf(interestList.get(index)));
             });
         }
     }

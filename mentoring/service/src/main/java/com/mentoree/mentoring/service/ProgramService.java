@@ -1,21 +1,18 @@
 package com.mentoree.mentoring.service;
 
-import com.mentoree.common.domain.BaseTimeEntity;
 import com.mentoree.common.domain.Category;
 import com.mentoree.mentoring.dto.ParticipatedProgramDto;
 import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
-import com.mentoree.mentoring.domain.entity.ProgramRole;
 import com.mentoree.mentoring.domain.repository.ParticipantRepository;
 import com.mentoree.mentoring.domain.repository.ProgramRepository;
 import com.mentoree.mentoring.dto.ApplyRequestDto;
 import com.mentoree.mentoring.dto.ProgramCreateDto;
 import com.mentoree.mentoring.dto.ProgramInfoDto;
-import com.mentoree.mentoring.messagequeue.connect.ConnectProducer;
+import com.mentoree.mentoring.messagequeue.sync.ParticipantSyncProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,40 +26,27 @@ public class ProgramService {
 
     private final ProgramRepository programRepository;
     private final ParticipantRepository participantRepository;
-    private final ConnectProducer<Program> programConnectProducer;
-    private final ConnectProducer<Participant> participantConnectProducer;
 
     private final int ALL_PROGRAM_PAGE_SIZE = 8;
     private final int RECOMMEND_PROGRAM_PAGE_SIZE = 8;
 
-    @Value("${kafka.topics.programs}")
-    private String programKafkaTopic;
+//    private final ParticipantSyncProducer producer;
 
-    @Value("${kafka.topics.participants}")
-    private String participantsKafkaTopic;
+//    @Value("${kafka.topics.participant-sync}")
+//    private final String participantSyncTopic;
 
     @Transactional
     public ParticipatedProgramDto createProgram(ProgramCreateDto createForm) {
 
         //프로그램 저장
-        createForm.setProgramRole(createForm.getMentor() ? ProgramRole.MENTOR.getKey() : ProgramRole.MENTEE.getKey());
-        Program saveProgram = programRepository.save(createForm.toEntity(Category.valueOf(createForm.getCategory())));
-        programConnectProducer.send(programKafkaTopic, saveProgram);
+        Program saveProgram = programRepository.save(createForm.toProgramEntity());
 
         //참가자 저장
-        Participant participant = Participant.builder()
-                .program(saveProgram)
-                .approval(true)
-                .isHost(true)
-                .memberId(createForm.getMemberId())
-                .role(ProgramRole.valueOf(createForm.getProgramRole()))
-                .build();
-        Participant saveParticipant = participantRepository.save(participant);
-        participantConnectProducer.send(participantsKafkaTopic, saveParticipant);
+        participantRepository.save(createForm.toParticipantEntity(saveProgram));
 
         return ParticipatedProgramDto.builder()
                 .id(saveProgram.getId())
-                .title(saveProgram.getProgramName())
+                .title(saveProgram.getTitle())
                 .build();
     }
 
@@ -92,7 +76,7 @@ public class ProgramService {
     public void applyProgram(ApplyRequestDto applyRequest) {
 
         Long countResult = participantRepository
-                .isApplicant(applyRequest.getMemberId(), applyRequest.getProgramId());
+                .countParticipantByMemberIdAndProgramId(applyRequest.getMemberId(), applyRequest.getProgramId());
 
         if(countResult > 0) {
             throw new RuntimeException("이미 신청 또는 참가 중입니다.");
@@ -109,23 +93,33 @@ public class ProgramService {
 
     @Transactional
     public boolean isHost(Long programId, Long memberId) {
-        return participantRepository.isHost(programId, memberId) > 0 ? true : false;
+        return participantRepository.isHost(programId, memberId) > 0;
     }
 
     @Transactional
     public void approval(Long programId, Long memberId) {
-        Participant participant = participantRepository.findParticipantByProgramIdAndMemberId(programId, memberId)
-                .orElseThrow(NoSuchElementException::new);
+        System.out.println("programId = " + programId + " and memberId = " + memberId);
+
+        List<Participant> all = participantRepository.findAll();
+        for (Participant participant : all) {
+            System.out.println("[participant] id : " + participant.getId());
+            System.out.println("[participant] programId : " + participant.getProgram().getId());
+            System.out.println("[participant] memberId : " + participant.getMemberId());
+            System.out.println("[participant] nickname : " + participant.getNickname());
+            System.out.println("[participant] isApproval : " + participant.isApproval());
+        }
+
+        Participant participant = participantRepository.findApplicantByMemberIdAndProgramId(programId, memberId);
         participant.approve();
     }
 
     @Transactional
     public void reject(Long programId, Long memberId) {
-        Participant participant = participantRepository.findParticipantByProgramIdAndMemberId(programId, memberId)
-                .orElseThrow(NoSuchElementException::new);
+        Participant participant = participantRepository.findApplicantByMemberIdAndProgramId(programId, memberId);
         participantRepository.delete(participant);
     }
 
+    @Transactional
     public Long countCurrentMember(Long programId) {
         return participantRepository.countCurrentMember(programId);
     }

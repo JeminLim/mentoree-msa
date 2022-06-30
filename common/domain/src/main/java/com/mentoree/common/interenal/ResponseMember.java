@@ -1,12 +1,16 @@
-package com.mentoree.mentoring.dto;
+package com.mentoree.common.interenal;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResponseMember {
 
     private Long memberId;

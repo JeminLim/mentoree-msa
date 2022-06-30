@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.*;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,31 +24,34 @@ public class Program extends BaseTimeEntity {
     private Long id;
 
     //변경 가능
-    private String programName;
+    private String title;
     private String description;
     private String goal;
+    @Column(name = "max_member")
     private int maxMember;
 
+    @Enumerated(EnumType.STRING)
     private Category category;
     //========================//
 
-    @OneToMany(mappedBy = "program")
+    @OneToMany(mappedBy = "program", fetch = LAZY)
     private List<Participant> participants = new ArrayList<>();
 
     private int curNum;
     private boolean isOpen;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "due_date")
     private LocalDate dueDate;
 
     @Builder
-    public Program(String programName, String description, int maxMember, String goal, Category category, LocalDate dueDate) {
-        Assert.notNull(programName, "program name must not be null");
+    public Program(String title, String description, int maxMember, String goal, Category category, LocalDate dueDate) {
+        Assert.notNull(title, "program name must not be null");
         Assert.notNull(description, "description must not be null");
         Assert.notNull(goal, "goal must not be null");
         Assert.isTrue(maxMember > 0, "member limit must be greater than 0");
 
-        this.programName = programName;
+        this.title = title;
         this.description = description;
         this.maxMember = maxMember;
         this.goal = goal;
@@ -58,8 +63,8 @@ public class Program extends BaseTimeEntity {
         this.curNum = 1;
     }
 
-    public void changeProgramName(String title) {
-        this.programName = title;
+    public void changeTitle(String title) {
+        this.title = title;
     }
 
     public void changeDescription(String description) {

@@ -4,6 +4,7 @@ buildscript {
         boot = "${spring}.boot"
         bootVersion = "2.7.0"
         lombok = "org.projectlombok:lombok"
+        snippetsDir = file('build/generated-snippets')
     }
 
     repositories {
@@ -14,6 +15,44 @@ buildscript {
         classpath "$boot:spring-boot-gradle-plugin:$bootVersion"
         classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
     }
+
+    if(project.name.contains('app')) {
+        ext {
+            snippetsDir = file('build/generated-snippets')
+        }
+        bootJar {
+            enabled = true
+            dependsOn asciidoctor
+            copy {
+                from "${asciidoctor.outputDir}"
+                into 'BOOT-INF/classes/static/docs'
+            }
+        }
+        jar {
+            enabled = true
+        }
+        asciidoctor {
+            dependsOn test
+            inputs.dir snippetsDir
+        }
+        asciidoctor.doFirst {
+            delete file('src/main/resources/static/docs')
+        }
+        task copyDocument(type: Copy) {
+            dependsOn asciidoctor
+            from file("build/docs/asciidoc")
+            into file("src/main/resources/static/docs")
+        }
+        test {
+            useJUnitPlatform()
+        }
+        build {
+            dependsOn copyDocument
+        }
+
+    }
+
+
 }
 
 
@@ -37,6 +76,7 @@ subprojects {
         }
     }
 
+    /** 공통 Dependencies */
     dependencies {
         compileOnly lombok
         annotationProcessor lombok
@@ -47,19 +87,28 @@ subprojects {
         testImplementation 'org.springframework.security:spring-security-test'
 
         runtimeOnly 'com.h2database:h2'
+    }
 
-        if(project.name.contains('domain')) { //도메인 에서 사용될 의존성
-            implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-            implementation 'org.springframework.boot:spring-boot-starter-validation'
-            runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-        }
-
-        if(project.name.contains('app')) {
+    /** app 관련 모듈 */
+    if(project.name.contains('app')) {
+            dependencies {
             //config server
             implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'
             implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
             implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bus-amqp'
+
+            /** spring rest docs */
+            testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+        }
+    }
+
+    /** 도메인 모듈 */
+    if(project.name.contains('domain')) {
+        dependencies {
+            implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+            implementation 'org.springframework.boot:spring-boot-starter-validation'
+            runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
         }
     }
 }

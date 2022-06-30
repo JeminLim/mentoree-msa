@@ -23,14 +23,16 @@ public class ReplyApiController {
 
     private final ReplyService replyService;
 
-    @GetMapping("/replies/list")
+    @GetMapping("/list")
     public ResponseEntity getReplies(@RequestParam("boardId") long boardId) {
         List<ReplyDto> replies = replyService.getReplies(boardId);
-        return ResponseEntity.ok().body(replies);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("replyList", replies);
+        return ResponseEntity.ok().body(responseBody);
     }
 
     //== 댓글 작성 관련 ==//
-    @PostMapping("/replies/new")
+    @PostMapping("/new")
     public ResponseEntity replyWrite(@Validated @RequestBody ReplyDto replyCreateForm,
                                      BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {

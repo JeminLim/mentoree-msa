@@ -27,4 +27,5 @@ dependencyManagement {
 dependencies {
     /** feign client */
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation project(':common-domain')
 }

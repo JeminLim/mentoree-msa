@@ -2,7 +2,9 @@ package com.mentoree.mentoring.dto;
 
 import com.mentoree.common.domain.Category;
 import com.mentoree.common.domain.DataTransferObject;
+import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
+import com.mentoree.mentoring.domain.entity.ProgramRole;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,60 +15,73 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class ProgramCreateDto extends DataTransferObject {
 
-    @NotNull
-    private Long memberId;
 
+    /** Program */
     @NotBlank
-    private String programName;
-
-    @Range(min = 2, max = 10)
-    private Integer targetNumber;
-
-    @NotNull
-    private String goal;
-
+    private String title;
     @NotNull
     private String description;
-
+    @NotNull
+    private String goal;
+    @Range(min = 2, max = 10)
+    private Integer maxMember;
     @NotNull
     private String category;
-
-    @NotNull
-    private Boolean mentor;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate dueDate;
 
-    private String programRole; // 멘토여부에 따라서 멘토 아니면 전부 멘티
+
+    /** Participant */
+    @NotNull
+    private Long memberId;
+    @NotNull
+    private String memberNickname;
+    @NotNull
+    private Boolean mentor;
 
     @Builder
-    public ProgramCreateDto(String programName, Integer targetNumber, String goal
-            , String description, String programRole, String category, Boolean mentor, LocalDate dueDate) {
-        this.programName = programName;
-        this.targetNumber = targetNumber;
+    public ProgramCreateDto(String title, Integer maxMember, String goal
+            , String description, String category, Boolean mentor, LocalDate dueDate,
+                            Long memberId, String memberNickname) {
+        this.title = title;
+        this.maxMember = maxMember;
         this.goal = goal;
         this.description = description;
-        this.programRole = programRole;
         this.category = category;
         this.mentor = mentor;
         this.dueDate = dueDate;
+        this.memberId = memberId;
+        this.memberNickname = memberNickname;
     }
 
-    public Program toEntity(Category category) {
+    public Program toProgramEntity() {
         return Program.builder()
-                .programName(programName)
+                .title(title)
                 .description(description)
-                .maxMember(targetNumber)
                 .goal(goal)
-                .category(category)
+                .maxMember(maxMember)
+                .category(Category.valueOf(category))
                 .dueDate(dueDate)
+                .build();
+    }
+
+    public Participant toParticipantEntity(Program program) {
+        return Participant.builder()
+                .memberId(memberId)
+                .nickname(memberNickname)
+                .role(mentor ? ProgramRole.MENTOR : ProgramRole.MENTEE)
+                .program(program)
+                .approval(true)
+                .isHost(true)
                 .build();
     }
 

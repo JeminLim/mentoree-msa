@@ -1,5 +1,6 @@
 package com.mentoree.mentoring.domain.repository;
 
+import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.ProgramRole;
 import com.mentoree.mentoring.domain.repository.ParticipantCustomRepository;
 import com.mentoree.mentoring.dto.ApplyRequestDto;
@@ -45,6 +46,14 @@ public class ParticipantCustomRepositoryImpl implements ParticipantCustomReposit
                 .where(participant.memberId.eq(memberId),
                         participant.approval.eq(true))
                 .fetch().size();
+    }
+
+    @Override
+    public Participant findApplicantByMemberIdAndProgramId(Long programId, Long memberId) {
+        return queryFactory.selectFrom(participant)
+                .where(participant.program.id.eq(programId),
+                        participant.memberId.eq(memberId))
+                .fetchOne();
     }
 
     private String enumToString(ProgramRole role) {

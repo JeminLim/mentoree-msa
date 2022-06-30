@@ -35,6 +35,11 @@ public class MemberService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public Member getMemberInfo(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(NoSuchElementException::new);
+    }
+
     @Transactional
     public void updateMemberProfile(MemberInfo memberInfo) {
         Member member = memberRepository.findByEmail(memberInfo.getEmail())
@@ -44,5 +49,7 @@ public class MemberService {
         member.updateLink(memberInfo.getLink());
         member.updateInterest(memberInfo.getInterests());
     }
+
+
 
 }

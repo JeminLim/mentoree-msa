@@ -1,8 +1,8 @@
 package com.mentoree.mentoring.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoree.common.domain.Category;
+import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.api.controller.ProgramApiController;
 import com.mentoree.mentoring.client.MemberClient;
 import com.mentoree.mentoring.domain.entity.Program;
@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -57,7 +58,7 @@ public class ProgramApiControllerTest {
     void setUp() {
         dtoA = ProgramInfoDto.builder()
                 .title("programA")
-                .category(Category.IT)
+                .category("IT")
                 .description("programA desc")
                 .dueDate(LocalDate.now().plusDays(5))
                 .maxMember(5)
@@ -65,7 +66,7 @@ public class ProgramApiControllerTest {
                 .build();
         dtoB = ProgramInfoDto.builder()
                 .title("programB")
-                .category(Category.ART)
+                .category("ART")
                 .description("programB desc")
                 .dueDate(LocalDate.now().plusDays(3))
                 .goal("programB goal")
@@ -91,16 +92,16 @@ public class ProgramApiControllerTest {
     void 프로그램_생성_테스트() throws Exception {
         //given
         ProgramCreateDto createForm = ProgramCreateDto.builder()
-                .targetNumber(3)
+                .maxMember(3)
                 .mentor(false)
                 .goal("create test")
-                .programName("createTest")
+                .title("createTest")
                 .description("for test")
                 .build();
         String requestBody = objectMapper.writeValueAsString(createForm);
         ParticipatedProgramDto expectedReturn = ParticipatedProgramDto.builder()
                 .id(1L)
-                .title(createForm.getProgramName())
+                .title(createForm.getTitle())
                 .build();
         when(programService.createProgram(any(ProgramCreateDto.class)))
                 .thenReturn(expectedReturn);
@@ -114,7 +115,7 @@ public class ProgramApiControllerTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value(createForm.getProgramName()));
+                .andExpect(jsonPath("$.title").value(createForm.getTitle()));
     }
 
     @Test

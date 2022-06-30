@@ -1,6 +1,5 @@
 package com.mentoree.mentoring.messagequeue.config;
 
-import com.mentoree.common.kafka.dto.SaveData;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -31,11 +30,6 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
-    }
-
-    @Bean
-    public SaveData saveData() {
-        return new SaveData();
     }
 
 }

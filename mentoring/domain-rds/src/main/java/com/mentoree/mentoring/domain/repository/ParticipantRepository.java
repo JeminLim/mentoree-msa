@@ -18,13 +18,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long>,
             + "where pm.memberId = :memberId and pm.approval = true")
     List<Long> findProgramIdByMemberId(@Param("memberId") Long memberId);
 
-    @Query("select count(pm) from Participant pm " +
-            "where pm.memberId = :memberId and pm.program.id = :programId")
-    Long isApplicant(@Param("memberId") Long memberId, @Param("programId") Long programId);
-
-    @Query("select pm from Participant pm " +
-            "where pm.memberId = :memberId and pm.program.id = :programId")
-    Optional<Participant> findParticipantByProgramIdAndMemberId(@Param("memberId") Long memberId, @Param("programId") Long programId);
+    Long countParticipantByMemberIdAndProgramId(@Param("memberId") Long memberId, @Param("programId") Long programId);
 
     @Query("select count(pm) from Participant pm " +
             "where pm.program.id = :programId and pm.approval = true")

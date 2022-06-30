@@ -9,7 +9,6 @@ import com.mentoree.mentoring.domain.repository.ProgramRepository;
 import com.mentoree.mentoring.dto.ApplyRequestDto;
 import com.mentoree.mentoring.dto.ParticipatedProgramDto;
 import com.mentoree.mentoring.dto.ProgramCreateDto;
-import com.mentoree.mentoring.messagequeue.connect.ConnectProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +32,6 @@ public class ProgramServiceTest {
     @Mock
     private ParticipantRepository participantRepository;
 
-    @Mock
-    private ConnectProducer<Program> programConnectProducer;
-    @Mock
-    private ConnectProducer<Participant> participantConnectProducer;
-
     @InjectMocks
     private ProgramService programService;
 
@@ -49,7 +43,7 @@ public class ProgramServiceTest {
     public void setUp() {
         //given
         program = Program.builder()
-                .programName("testProgram")
+                .title("testProgram")
                 .category(Category.IT)
                 .dueDate(LocalDate.now().plusDays(8))
                 .description("test program")
@@ -78,14 +72,13 @@ public class ProgramServiceTest {
     void 프로그램_생성_테스트() {
         //given
         ProgramCreateDto createRequest = ProgramCreateDto.builder()
-                .programName("testProgram")
+                .title("testProgram")
                 .category("IT")
                 .dueDate(LocalDate.now().plusDays(8))
                 .description("test program")
                 .goal("for test")
-                .programRole("MENTOR")
                 .mentor(false)
-                .targetNumber(5)
+                .maxMember(5)
                 .build();
         createRequest.setMemberId(1L);
         when(programRepository.save(any(Program.class))).thenReturn(program);
@@ -96,7 +89,7 @@ public class ProgramServiceTest {
 
         //then
         assertThat(result.getId()).isEqualTo(program.getId());
-        assertThat(result.getTitle()).isEqualTo(program.getProgramName());
+        assertThat(result.getTitle()).isEqualTo(program.getTitle());
     }
 
     @Test
@@ -104,7 +97,7 @@ public class ProgramServiceTest {
     void 프로그램_지원_성공_테스트() {
         //given
         ApplyRequestDto applyRequest = new ApplyRequestDto(1L, "testNick", 1L, "apply msg", "MENTOR");
-        when(participantRepository.isApplicant(any(Long.class), any(Long.class))).thenReturn(0L);
+        when(participantRepository.countParticipantByMemberIdAndProgramId(any(Long.class), any(Long.class))).thenReturn(0L);
         when(programRepository.findById(any(Long.class))).thenReturn(Optional.of(program));
         //when
         programService.applyProgram(applyRequest);
@@ -118,7 +111,7 @@ public class ProgramServiceTest {
     void 프로그램_지원_실패_테스트() {
         //given
         ApplyRequestDto applyRequest = new ApplyRequestDto(1L, "testNick", 1L, "apply msg", "MENTOR");
-        when(participantRepository.isApplicant(any(Long.class), any(Long.class))).thenReturn(1L);
+        when(participantRepository.countParticipantByMemberIdAndProgramId(any(Long.class), any(Long.class))).thenReturn(1L);
         //when
         assertThatThrownBy(() -> {
             programService.applyProgram(applyRequest);
@@ -129,8 +122,8 @@ public class ProgramServiceTest {
     @DisplayName("프로그램_지원자_승인_테스트")
     void 프로그램_지원자_승인_테스트() {
         //given
-        when(participantRepository.findParticipantByProgramIdAndMemberId(any(Long.class), any(Long.class)))
-                .thenReturn(Optional.of(applicant));
+        when(participantRepository.findApplicantByMemberIdAndProgramId(any(Long.class), any(Long.class)))
+                .thenReturn(applicant);
         //when
         programService.approval(1L, 2L);
         //then
