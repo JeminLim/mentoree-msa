@@ -1,20 +1,16 @@
 package com.mentoree.mentoring.domain.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum ProgramRole {
 
-    MENTOR("mentor"),
-    MENTEE("mentee");
+    MENTOR("mentor", "멘토"),
+    MENTEE("mentee", "멘티");
 
-    private String value;
-
-    ProgramRole(String value) { this.value = value;}
-
-    public String getKey() {
-        return name();
-    }
-
-    public String getValue() {
-        return value;
-    }
+    private final String key;
+    private final String value;
 
 }

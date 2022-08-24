@@ -80,8 +80,6 @@ public class ReplyApiTest {
                                 .param("boardId", "1")
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.replyList.size()").value(2))
-                .andExpect(jsonPath("$.replyList[0].replyId").value(1))
-                .andExpect(jsonPath("$.replyList[1].replyId").value(2))
                 .andDo(
                         document("/get/api/replies/list",
                                 preprocessRequest(prettyPrint()),

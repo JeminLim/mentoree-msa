@@ -3,32 +3,26 @@ package com.mentoree.member.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoree.member.domain.entity.Member;
 import com.mentoree.member.dto.MemberInfo;
-import com.netflix.discovery.converters.Auto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -36,13 +30,13 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @ExtendWith(RestDocumentationExtension.class)
-@Transactional
 public class MemberAppServiceTest {
 
     @Autowired
@@ -64,6 +58,7 @@ public class MemberAppServiceTest {
     @Test
     @WithMockUser(username="testA@email.com", password = "", roles = "USER")
     @DisplayName("프로필_요청")
+    @Transactional
     void 프로필_요청() throws Exception {
 
         Member testerA = (Member) data.get("memberA");
@@ -85,12 +80,12 @@ public class MemberAppServiceTest {
                                        parameterWithName("email").description("user's email which wants to get")
                                 ),
                                 responseFields(
+                                        fieldWithPath("memberId").description("The user's id"),
                                         fieldWithPath("email").description("The user's email address"),
                                         fieldWithPath("memberName").description("The user's name"),
                                         fieldWithPath("nickname").description("The user's nickname"),
                                         fieldWithPath("interests").description("An array of the user's interested category"),
-                                        fieldWithPath("link").description("Self-description with user's career"),
-                                        fieldWithPath("participatedProgramIdList").description("Program which user is already participated")
+                                        fieldWithPath("link").description("Self-description with user's career")
                                 )
                         ));
     }
@@ -98,6 +93,7 @@ public class MemberAppServiceTest {
     @Test
     @WithMockUser(username = "testA@email.com", password="", roles = "USER")
     @DisplayName("프로필_수정_요청")
+    @Transactional
     void 프로필_수정_요청() throws Exception {
         Member testerA = (Member) data.get("memberA");
         MemberInfo update = MemberInfo.builder()
@@ -111,6 +107,7 @@ public class MemberAppServiceTest {
 
         mockMvc.perform(
                 post("/api/members/profile")
+                        .header("X-Authorization-User", "testA@email.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())
@@ -121,12 +118,12 @@ public class MemberAppServiceTest {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
+                                fieldWithPath("memberId").description("The user's id"),
                                 fieldWithPath("email").description("The user's email address(Immutable)"),
                                 fieldWithPath("memberName").description("The user's name(Immutable)"),
                                 fieldWithPath("nickname").description("Changed user nickname"),
                                 fieldWithPath("interests").description("An array of changed category the user's interested in"),
-                                fieldWithPath("link").description("Changed self-description with user's career"),
-                                fieldWithPath("participatedProgramIdList").ignored()
+                                fieldWithPath("link").description("Changed self-description with user's career")
                         ),
                         responseFields(
                                 fieldWithPath("result").description("Result of request - success or failed")

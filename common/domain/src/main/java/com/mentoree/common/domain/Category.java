@@ -7,13 +7,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Category {
 
-    EMPTY("EMPTY", "입력없음"),
-    IT("IT", "IT/PROGRAMMING"),
-    MUSIC("MUSIC", "음악"),
-    LIFE("LIFE", "인생상담"),
-    EMPLOYMENT("EMPLOYMENT", "취업"),
-    ART("ART", "미술");
+    EMPTY( "입력없음", "EMPTY"),
+    IT( "프로그래밍", "IT"),
+    MUSIC("음악", "MUSIC" ),
+    LIFE("인생상담", "LIFE" ),
+    EMPLOYMENT( "취업", "EMPLOYMENT"),
+    ART("미술", "ART");
 
     private final String key;
     private final String value;
+
 }

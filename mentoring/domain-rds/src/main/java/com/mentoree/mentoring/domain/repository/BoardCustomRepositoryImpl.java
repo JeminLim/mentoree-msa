@@ -26,7 +26,8 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 board.mission.id.as("missionId"),
                 board.mission.title.as("missionTitle"),
                 board.memberId.as("writerId"),
-                board.content
+                board.nickname.as("writerNickname"),
+                board.content.as("content")
                 ))
                 .from(board)
                 .join(board.mission, mission)
@@ -36,16 +37,12 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
 
     @Override
     public BoardInfoDto getBoardInfoById(Long boardId) {
-
-        // fetch join 은 단순 엔티티 그래프 탐색을 가능하게 하기 때문에 Projection 에서 사용할 수 없다.
-        // 조인을 한 테이블에서 데이터를 탐색하고 싶으면, 그냥 Join을 사용해서 한꺼번에 가져와야 한다.
-        // 만약 join을 안하면, 내부적으로 Cross join을 사용해서 데이터가 불어서 가져오는 불상사가 일어난다.
-
         return queryFactory.select(Projections.bean(BoardInfoDto.class,
                         board.id.as("boardId"),
                         board.mission.id.as("missionId"),
                         board.mission.title.as("missionTitle"),
                         board.memberId.as("writerId"),
+                        board.nickname.as("writerNickname"),
                         board.content
                 ))
                 .from(board)

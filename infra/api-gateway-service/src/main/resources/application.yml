@@ -1,5 +1,57 @@
+front:
+  url: http://localhost:8081
+
 server:
+  url: http://localhost:8000
   port: 8000
+
+spring:
+  application:
+    name: api-gateway-service
+
+  main:
+    allow-bean-definition-overriding: true
+
+  cloud:
+    gateway:
+      routes:
+        - id: member-service
+          uri: lb://MEMBER-SERVICE/
+          predicates:
+            - Path=/member-service/**
+            - Method=GET, POST
+          filters:
+            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+#        - id: mentoring-service
+#          uri: lb://MENTORING-SERVICE/
+#          predicates:
+#            - Path=/mentoring-service/api/programs/list,/mentoring-service/api/programs/{programId}
+#            - Method=GET
+#          filters:
+#            - RewritePath=/mentoring-service/(?<segment>.*), /$\{segment}
+        - id: mentoring-service
+          uri: lb://MENTORING-SERVICE/
+          predicates:
+            - Path=/mentoring-service/**
+            - Method=GET, POST
+          filters:
+            - RewritePath=/mentoring-service/(?<segment>.*), /$\{segment}
+        - id: reply-service
+          uri: lb://REPLY-SERVICE/
+          predicates:
+            - Path=/reply-service/**
+            - Method=GET, POST
+          filters:
+            - RewritePath=/reply-service/(?<segment>.*), /$\{segment}
+        - id: member-auth-service
+          uri: lb://MEMBER-AUTH-SERVICE/
+          predicates:
+            - Path=/member-auth-service/**
+            - Method=GET, POST
+          filters:
+            - RewritePath=/member-auth-service/(?<segment>.*), /$\{segment}
+      default-filters:
+        - name: LoggingFilter
 
 eureka:
   client:
@@ -11,25 +63,8 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.name}:${server.port}
 
-spring:
-  application:
-    name: apigateway-service
-  cloud:
-    gateway:
-      default-filters:
-        - name: CustomAuthFilter
-      routes:
-        - id: member-service
-          uri: lb://MEMBER-SERVICE
-          predicates:
-            - Path=/member-service/api/members/**
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
-        - id: mentoring-service
-          uri: lb://MENTORING-SERVICE
-          predicates:
-            - Path=/mentoring-service/api/programs/**, /mentoring-service/api/missions/**, /mentoring-service/api/boards/**
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/member-service/(?<segment>.*), /$\{segment}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh

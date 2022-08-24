@@ -54,6 +54,8 @@ public class BoardApiControllerTest {
                 .content("new")
                 .missionId(1L)
                 .missionTitle("missionA")
+                .writerId(1L)
+                .writerNickname("testerNick")
                 .build();
     }
 

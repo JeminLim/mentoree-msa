@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,7 +26,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -93,10 +98,14 @@ public class ProgramApiControllerTest {
         //given
         ProgramCreateDto createForm = ProgramCreateDto.builder()
                 .maxMember(3)
-                .mentor(false)
                 .goal("create test")
                 .title("createTest")
                 .description("for test")
+                .category("ART")
+                .mentor(false)
+                .memberId(1L)
+                .memberNickname("testNick")
+                .dueDate(LocalDate.now().plusDays(3))
                 .build();
         String requestBody = objectMapper.writeValueAsString(createForm);
         ParticipatedProgramDto expectedReturn = ParticipatedProgramDto.builder()
@@ -123,18 +132,24 @@ public class ProgramApiControllerTest {
     @WithMockUser
     void 프로그램_리스트_요청_테스트() throws Exception {
         //given
-        when(memberClient.getMember(any(Long.class))).thenReturn(responseMember);
-        when(programService.getProgramList(any(Integer.class), any(Long.class))).thenReturn(programList);
+        Map<String, Object> expectResponse = new HashMap<>();
+        expectResponse.put("programList", programList);
+        expectResponse.put("hasNext", false);
+
+        when(memberClient.getMemberInfo(any(Long.class))).thenReturn(responseMember);
+        when(programService.getProgramList(any(Integer.class), any(Long.class))).thenReturn(expectResponse);
         //when
         ResultActions result = mockMvc.perform(
                 get("/api/programs/list")
+                        .header("X-Authorization-Id", "1")
                         .param("page", "0")
                         .param("memberId", "1")
                         .with(csrf())
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.program.size()").value(2));
+                .andExpect(jsonPath("$.programList.size()").value(2))
+                .andExpect(jsonPath("$.hasNext").value(false));
     }
 
     @Test
@@ -142,18 +157,21 @@ public class ProgramApiControllerTest {
     @DisplayName("프로그램_추천_리스트_요청_테스트")
     void 프로그램_추천_리스트_요청_테스트() throws Exception {
         //given
-        when(memberClient.getMember(any(Long.class))).thenReturn(responseMember);
-        when(programService.getRecommendProgramList(any(Integer.class), any(Long.class),any())).thenReturn(programList);
+        Slice<ProgramInfoDto> expectResponse = new SliceImpl<>(programList, PageRequest.of(0, 2), false);
+        when(memberClient.getMemberInfo(any(Long.class))).thenReturn(responseMember);
+        when(programService.getRecommendProgramList(any(Integer.class), any(Long.class),any())).thenReturn(expectResponse);
         //when
         ResultActions result = mockMvc.perform(
                 get("/api/programs/list/recommend")
+                        .header("X-Authorization-Id", "1")
                         .param("page", "0")
                         .param("memberId", "1")
                         .with(csrf())
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.program.size()").value(2));
+                .andExpect(jsonPath("$.programRecommendList.size()").value(2))
+                .andExpect(jsonPath("$.hasNext").value(false));
     }
 
     @Test
@@ -162,13 +180,16 @@ public class ProgramApiControllerTest {
     void 프로그램_상세정보_요청_테스트() throws Exception {
         //given
         when(programService.getProgramInfo(any(Long.class))).thenReturn(dtoA);
+        when(programService.isHost(any(Long.class), any(Long.class))).thenReturn(true);
         //when
         ResultActions result = mockMvc.perform(
                 get("/api/programs/1")
+                        .header("X-Authorization-Id", "1")
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("programA"));
+                .andExpect(jsonPath("$.programInfo.title").value("programA"))
+                .andExpect(jsonPath("$.isHost").value(true));
     }
 
     @Test
@@ -190,7 +211,7 @@ public class ProgramApiControllerTest {
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(content().string("success"));
+                .andExpect(jsonPath("$.result").value("success"));
     }
 
 
@@ -213,6 +234,7 @@ public class ProgramApiControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 get("/api/programs/1/applicants")
+                        .header("X-Authorization-Id", "1")
                         .param("memberId", String.valueOf(1))
         );
         //then
@@ -236,6 +258,7 @@ public class ProgramApiControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 post("/api/programs/1/applicants/accept")
+                        .header("X-Authorization-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())
@@ -259,6 +282,7 @@ public class ProgramApiControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 post("/api/programs/1/applicants/reject")
+                        .header("X-Authorization-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())

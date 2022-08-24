@@ -16,7 +16,6 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode
 public class Program extends BaseTimeEntity {
 
     @Id @GeneratedValue

@@ -1,5 +1,10 @@
 package com.mentoree.mentoring.api.controller;
 
+import com.mentoree.common.advice.exception.BindingFailureException;
+import com.mentoree.common.advice.exception.NoAuthorityException;
+import com.mentoree.mentoring.domain.entity.Participant;
+import com.mentoree.mentoring.domain.entity.ProgramRole;
+import com.mentoree.mentoring.domain.repository.ParticipantRepository;
 import com.mentoree.mentoring.dto.BoardInfoDto;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import com.mentoree.mentoring.service.BoardService;
@@ -10,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +26,7 @@ import java.util.Map;
 @RequestMapping("/api/missions")
 public class MissionApiController {
 
+    private final ParticipantRepository participantRepository;
     private final MissionService missionService;
     private final BoardService boardService;
 
@@ -27,8 +34,10 @@ public class MissionApiController {
     public ResponseEntity getMissionList(@RequestParam("programId") long programId,
                                          @RequestParam(value = "isOpen", defaultValue = "true") boolean isOpen) {
 
-        List<MissionInfoDto> currentMission = missionService.getMissionList(programId, isOpen);
 
+        log.info("Request endpoint : GET /api/missions/list?programId=" + programId);
+
+        List<MissionInfoDto> currentMission = missionService.getMissionList(programId, isOpen);
         Map<String, Object> data = new HashMap<>();
         data.put("missions", currentMission);
         return ResponseEntity.ok().body(data);
@@ -36,6 +45,8 @@ public class MissionApiController {
 
     @GetMapping("/{missionId}")
     public ResponseEntity getMissionInfo(@PathVariable("missionId") long missionId) {
+
+        log.info("Request endpoint : GET /api/missions/{" + missionId + "}");
 
         MissionInfoDto findMission = missionService.getMissionInfo(missionId);
         List<BoardInfoDto> findBoards = boardService.getBoardList(missionId);
@@ -47,11 +58,21 @@ public class MissionApiController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity createMission(@RequestParam("programId") Long programId,
+    public ResponseEntity createMission(HttpServletRequest request,
                                         @RequestBody MissionInfoDto missionDTO,
                                         BindingResult bindingResult) {
+
+        log.info("Request endpoint : POST /api/missions/new?programId=" + missionDTO.getProgramId());
+
+        Long programId = missionDTO.getProgramId();
+        long loginMemberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
+        Participant writer = participantRepository.findApplicantByMemberIdAndProgramId(programId, loginMemberId);
+        if(!writer.getRole().equals(ProgramRole.MENTOR)) {
+            throw new NoAuthorityException("멘토가 아닙니다.");
+        }
+
         if(bindingResult.hasErrors()) {
-//            throw new BindingFailureException(bindingResult, "잘못된 미션 작성 요청입니다.");
+            throw new BindingFailureException(bindingResult, "잘못된 미션 작성 요청 입니다.");
         }
 
         missionService.enrollMission(programId, missionDTO);

@@ -1,7 +1,6 @@
 package com.mentoree.mentoring.dto;
 
 import com.mentoree.common.domain.Category;
-import com.mentoree.common.domain.DataTransferObject;
 import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
 import com.mentoree.mentoring.domain.entity.ProgramRole;
@@ -14,14 +13,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProgramCreateDto extends DataTransferObject {
+public class ProgramCreateDto implements Serializable {
 
 
     /** Program */

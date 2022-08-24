@@ -1,5 +1,8 @@
 package com.mentoree.mentoring.domain.repository;
 
+import com.mentoree.mentoring.domain.entity.Mission;
+import com.mentoree.mentoring.domain.entity.QMission;
+import com.mentoree.mentoring.domain.entity.QProgram;
 import com.mentoree.mentoring.domain.repository.MissionCustomRepository;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import com.querydsl.core.types.Projections;
@@ -9,8 +12,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mentoree.mentoring.domain.entity.QMission.*;
+import static com.mentoree.mentoring.domain.entity.QProgram.*;
 
 public class MissionCustomRepositoryImpl implements MissionCustomRepository {
 
@@ -20,31 +25,22 @@ public class MissionCustomRepositoryImpl implements MissionCustomRepository {
 
     @Override
     public List<MissionInfoDto> getMissionListBy(Long programId, boolean isOpen) {
-        return queryFactory.select(Projections.bean(MissionInfoDto.class,
-                    mission.id.as("missionId"),
-                    mission.title.as("missionTitle"),
-                    mission.goal.as("missionGoal"),
-                    mission.content,
-                    mission.dueDate
-                ))
-                .from(mission)
+        List<Mission> queryResult = queryFactory.selectFrom(mission)
+                .join(mission.program, program).fetchJoin()
                 .where(mission.program.id.eq(programId),
                         isOpenMission(isOpen))
                 .fetch();
+
+        return queryResult.stream().map(MissionInfoDto::of).collect(Collectors.toList());
     }
 
     @Override
     public MissionInfoDto getMissionInfoById(Long missionId) {
-        return queryFactory.select(Projections.bean(MissionInfoDto.class,
-                    mission.id.as("missionId"),
-                    mission.title.as("missionTitle"),
-                    mission.goal.as("missionGoal"),
-                    mission.content,
-                    mission.dueDate
-                ))
-                .from(mission)
-                .where(mission.id.eq(missionId))
+        Mission queryResult = queryFactory.selectFrom(QMission.mission)
+                .join(QMission.mission.program, program).fetchJoin()
+                .where(QMission.mission.id.eq(missionId))
                 .fetchOne();
+        return MissionInfoDto.of(queryResult);
     }
 
     private BooleanExpression isOpenMission(boolean isOpen) {

@@ -24,10 +24,10 @@ public class RedisConfig {
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
-        // Redis 저장소에 저장할 떄 자바에만 종속적이지 않게 하기 위해서, JSON 문자열 또는 MessagePack 형식을 고려해서 해야 한다다
+        // Redis 저장소에 저장할 떄 자바에만 종속적이지 않게 하기 위해서, JSON 문자열 또는 MessagePack 형식을 고려해서 해야 한다
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         return redisTemplate;
     }

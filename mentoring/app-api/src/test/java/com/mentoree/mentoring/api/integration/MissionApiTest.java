@@ -84,6 +84,7 @@ public class MissionApiTest {
 
         mockMvc.perform(
                 get("/api/missions/list")
+                        .header("X-Authorization-Id", "1")
                         .param("programId", "1")
                         .param("isOpen", "true")
                 ).andExpect(status().isOk())
@@ -122,6 +123,7 @@ public class MissionApiTest {
 
         mockMvc.perform(
                         RestDocumentationRequestBuilders.get("/api/missions/{missionId}", curMission.getId())
+                                .header("X-Authorization-Id", "1")
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.mission.missionId").value(curMission.getId()))
                 .andExpect(jsonPath("$.mission.missionTitle").value(curMission.getTitle()))
@@ -130,6 +132,7 @@ public class MissionApiTest {
                 .andExpect(jsonPath("$.mission.dueDate").value(curMission.getDueDate().toString()))
                 .andExpect(jsonPath("$.boardList.size()").value(1))
                 .andExpect(jsonPath("$.boardList[0].boardId").value(board.getId()))
+                .andExpect(jsonPath("$.boardList[0].writerNickname").value(board.getNickname()))
                 .andDo(
                         document("/get/api/missions/missionId",
                                 preprocessRequest(prettyPrint()),
@@ -148,6 +151,7 @@ public class MissionApiTest {
                                         fieldWithPath("boardList[].missionId").description("mission pk which the board is belong to"),
                                         fieldWithPath("boardList[].missionTitle").description("mission title which the board is belong to"),
                                         fieldWithPath("boardList[].writerId").description("Member pk who wrote the board"),
+                                        fieldWithPath("boardList[].writerNickname").description("Member nickname who wrote the board"),
                                         fieldWithPath("boardList[].content").description("Board content")
                                 )
                         )
@@ -169,10 +173,11 @@ public class MissionApiTest {
 
         mockMvc.perform(
                     RestDocumentationRequestBuilders.post("/api/missions/new")
-                                .param("programId", "1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBody)
-                                .with(csrf())
+                            .header("X-Authorization-Id", "1")
+                            .param("programId", "1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                            .with(csrf())
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(

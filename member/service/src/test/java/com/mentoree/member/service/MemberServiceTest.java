@@ -37,12 +37,12 @@ public class MemberServiceTest {
                 .nickname("testNick")
                 .email("test@email.com")
                 .role(UserRole.USER)
-                .oAuth2Id("google")
+                .authId("google")
                 .link("test member description")
                 .build();
-        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.of(member));
         //when
-        MemberInfo memberProfile = memberService.getMemberProfile("test@email.com");
+        MemberInfo memberProfile = memberService.getMemberProfile(1L);
         //then
         assertThat(memberProfile.getEmail()).isEqualTo(member.getEmail());
         assertThat(memberProfile.getLink()).isEqualTo(member.getLink());
@@ -59,10 +59,10 @@ public class MemberServiceTest {
                 .nickname("testNick")
                 .email("test@email.com")
                 .role(UserRole.USER)
-                .oAuth2Id("google")
+                .authId("google")
                 .link("test member description")
                 .build();
-        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.of(member));
         MemberInfo input = MemberInfo.builder()
                 .memberName(member.getMemberName())
                 .nickname("changedNick")

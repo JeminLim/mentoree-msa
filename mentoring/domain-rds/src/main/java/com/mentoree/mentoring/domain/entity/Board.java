@@ -11,7 +11,6 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode
 public class Board extends BaseTimeEntity {
 
     @Id
@@ -24,11 +23,12 @@ public class Board extends BaseTimeEntity {
     private Mission mission;
 
     private Long memberId;
+    private String nickname;
 
     private String content;
 
     @Builder
-    public Board(Mission mission, String content, Long memberId) {
+    public Board(Mission mission, String content, Long memberId, String nickname) {
         Assert.notNull(mission, "mission must not be null");
         Assert.notNull(content, "content must not be null");
         Assert.notNull(memberId, "writer must not be null");
@@ -36,6 +36,7 @@ public class Board extends BaseTimeEntity {
         this.mission = mission;
         this.content = content;
         this.memberId = memberId;
+        this.nickname = nickname;
     }
 
 }

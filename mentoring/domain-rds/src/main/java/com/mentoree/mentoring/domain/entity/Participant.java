@@ -12,7 +12,6 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode
 public class Participant extends BaseTimeEntity {
 
     @Id
@@ -21,6 +20,7 @@ public class Participant extends BaseTimeEntity {
     private Long id;
 
     private Long memberId;
+
     private String nickname;
 
     @ManyToOne(fetch = LAZY)
@@ -35,25 +35,29 @@ public class Participant extends BaseTimeEntity {
     private String message;
 
     @Builder
-    public Participant(Long memberId, String nickname, Program program, ProgramRole role, boolean isHost, boolean approval, String message) {
+    public Participant(Long memberId, Program program, String nickname, ProgramRole role, boolean isHost, boolean approval, String message) {
         Assert.notNull(memberId, "participant user must not be null");
         Assert.notNull(program, "participant program must not be null");
         Assert.notNull(role, "participant role must not be null");
         Assert.notNull(isHost, "isHost variable must not be null");
 
         this.memberId = memberId;
-        this.nickname = nickname;
         this.program = program;
         this.role = role;
         this.isHost = isHost;
         this.approval = approval;
         this.message = message;
+        this.nickname = nickname;
     }
 
     public void approve() {
         approval = true;
         int restSeat = program.addMember(this);
         if (restSeat >= program.getMaxMember()) program.closeProgram();
+    }
+
+    public void updateParticipantNickname(String nickname) {
+        this.nickname = nickname;
     }
 
 }

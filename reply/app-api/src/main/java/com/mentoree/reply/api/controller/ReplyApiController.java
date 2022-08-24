@@ -1,11 +1,11 @@
 package com.mentoree.reply.api.controller;
 
+import com.mentoree.common.advice.exception.BindingFailureException;
 import com.mentoree.reply.domain.dto.ReplyDto;
 import com.mentoree.reply.domain.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,9 @@ public class ReplyApiController {
 
     @GetMapping("/list")
     public ResponseEntity getReplies(@RequestParam("boardId") long boardId) {
+
+        log.info("Request endpoint : GET /api/replies/list?boardId=" + boardId);
+
         List<ReplyDto> replies = replyService.getReplies(boardId);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("replyList", replies);
@@ -35,14 +38,17 @@ public class ReplyApiController {
     @PostMapping("/new")
     public ResponseEntity replyWrite(@Validated @RequestBody ReplyDto replyCreateForm,
                                      BindingResult bindingResult) {
+
+        log.info("Request endpoint : POST /api/replies/new");
+
         if(bindingResult.hasErrors()) {
-//            throw new BindingFailureException(bindingResult, "잘못된 댓글 작성 요청입니다.");
-            log.error("바인딩 에러 발생");
+            throw new BindingFailureException(bindingResult, "잘못된 댓글 작성 요청입니다.");
         }
 
-        replyService.writeReply(replyCreateForm);
+        ReplyDto savedReply = replyService.writeReply(replyCreateForm);
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");
+        result.put("reply", savedReply);
         return ResponseEntity.ok().body(result);
     }
 

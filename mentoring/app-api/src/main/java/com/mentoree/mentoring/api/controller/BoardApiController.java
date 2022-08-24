@@ -1,5 +1,7 @@
 package com.mentoree.mentoring.api.controller;
 
+import com.mentoree.common.advice.exception.BindingFailureException;
+import com.mentoree.common.advice.exception.NoAuthorityException;
 import com.mentoree.mentoring.dto.BoardInfoDto;
 import com.mentoree.mentoring.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,9 @@ public class BoardApiController {
 
     @GetMapping("/{boardId}")
     public ResponseEntity getBoardInfo(@PathVariable("boardId") long boardId) {
+
+        log.info("Request endpoint : GET /api/boards/{" + boardId + "}");
+
         BoardInfoDto boardInfo = boardService.getBoardInfo(boardId);
         Map<String, Object> data = new HashMap<>();
         data.put("boardInfo", boardInfo);
@@ -29,17 +34,18 @@ public class BoardApiController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity createBoard(@RequestParam("memberId") Long memberId,
-                                      @Validated @RequestBody BoardInfoDto createRequest,
+    public ResponseEntity createBoard(@Validated @RequestBody BoardInfoDto createRequest,
                                       BindingResult bindingResult) {
+
+        Long memberId = createRequest.getWriterId();
+        log.info("Request endpoint : GET /api/boards/new?memberId=" + memberId);
+
         if(bindingResult.hasErrors()) {
-//            throw new BindingFailureException(bindingResult, "잘못된 게시글 작성 요청입니다.");
-            log.error("바인딩 에러 발생");
+            throw new BindingFailureException(bindingResult, "잘못된 게시글 작성 요청입니다.");
         }
 
         if(!boardService.isParticipation(memberId)) {
-//            throw new NoAuthorityException("참가자가 아닙니다.");
-            log.error("참가자 아님");
+            throw new NoAuthorityException("참가자가 아닙니다.");
         }
 
         boardService.writeBoard(createRequest);

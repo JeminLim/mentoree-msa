@@ -1,5 +1,7 @@
 package com.mentoree.mentoring.api.controller;
 
+import com.mentoree.common.advice.exception.BindingFailureException;
+import com.mentoree.common.advice.exception.NoAuthorityException;
 import com.mentoree.mentoring.client.MemberClient;
 import com.mentoree.mentoring.dto.ApplyRequestDto;
 import com.mentoree.mentoring.dto.ParticipatedProgramDto;
@@ -9,14 +11,18 @@ import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.service.ProgramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -31,49 +37,78 @@ public class ProgramApiController {
     @PostMapping("/new")
     public ResponseEntity createProgram(@Validated @RequestBody ProgramCreateDto createForm,
                                         BindingResult bindingResult) {
+
+        log.info("Request endpoint : POST /api/programs/new");
+
         if(bindingResult.hasErrors()) {
-            log.error("바인딩 에러 발생");
+            throw new BindingFailureException(bindingResult, "잘못된 프로그램 생성 요청입니다.");
         }
         ParticipatedProgramDto data = programService.createProgram(createForm);
-        return ResponseEntity.ok().body(data);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("participatedProgram", data);
+        return ResponseEntity.ok().body(responseBody);
     }
-
-
 
     //== 프로그램 리스트 ==//
     @GetMapping("/list")
-    public ResponseEntity getMoreList(@RequestParam("page") Integer page, @RequestParam("memberId") Long memberId) {
-        ResponseMember member = memberClient.getMember(memberId);
-        List<ProgramInfoDto> programList = programService.getProgramList(page, member.getMemberId());
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("program", programList);
+    public ResponseEntity getMoreList(HttpServletRequest request, @RequestParam("page") Integer page) {
+
+        log.info("Request endpoint : GET /api/programs/list?page=" + page);
+
+        String memberId = request.getHeader("X-Authorization-Id");
+
+        Map<String, Object> responseBody = memberId != null ?
+                programService.getProgramList(page, Long.parseLong(memberId)) :
+                programService.getProgramList(page, null);
+
         return ResponseEntity.ok().body(responseBody);
     }
 
-    @GetMapping("/list/recommend")
-    public ResponseEntity getMoreRecommendList(@RequestParam("page") Integer page, @RequestParam("memberId") Long memberId) {
-        ResponseMember member = memberClient.getMember(memberId);
-        List<ProgramInfoDto> recommendProgramList =
-                programService.getRecommendProgramList(page, member.getMemberId(), member.getInterests());
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("program", recommendProgramList);
-        return ResponseEntity.ok().body(responseBody);
+    @GetMapping("/recommendations/list")
+    public ResponseEntity getMoreRecommendList(HttpServletRequest request, @RequestParam("page") Integer page) {
+
+        log.info("Request endpoint : GET /api/programs/recommendations/list?page=" + page);
+
+        Long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
+
+        /** 로그인 사용자 정보 Feign client 요청 */
+        ResponseMember memberInfo = memberClient.getMemberInfo(memberId);
+        Slice<ProgramInfoDto> recommendProgramList
+                = programService.getRecommendProgramList(page, memberId, memberInfo.getInterests());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("recommendProgramList", recommendProgramList.getContent());
+        result.put("hasNext", recommendProgramList.hasNext());
+
+        return ResponseEntity.ok().body(result);
     }
 
     //== 프로그램 상세 정보 ==//
     @GetMapping("/{programId}")
-    public ResponseEntity programInfoGet(@PathVariable("programId") long programId) {
-        return ResponseEntity.ok().body(programService.getProgramInfo(programId));
+    public ResponseEntity programInfoGet(HttpServletRequest request, @PathVariable("programId") long programId) {
+
+        log.info("Request endpoint : GET /api/programs/{" + programId + "}");
+
+        long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("programInfo", programService.getProgramInfo(programId));
+        responseBody.put("isHost", programService.isHost(programId, memberId));
+        return ResponseEntity.ok().body(responseBody);
     }
 
 
     //== 프로그램 참가 신청 ==//
     @PostMapping("/{programId}/join")
-    public ResponseEntity applyProgram(@Validated @RequestBody ApplyRequestDto applyRequest, BindingResult bindingResult) {
+    public ResponseEntity applyProgram(
+            @PathVariable("programId") Long programId,
+            @Validated @RequestBody ApplyRequestDto applyRequest, BindingResult bindingResult) {
+
+        log.info("Request endpoint : POST /api/programs/{" + programId + "}/join");
+
         if(bindingResult.hasErrors()) {
-//            throw new BindingFailureException(bindingResult, "잘못된 참가 신청 요청입니다.");
-            log.error("바인딩 에러 발생");
+            throw new BindingFailureException(bindingResult, "잘못된 참가 신청 요청입니다.");
         }
+
         programService.applyProgram(applyRequest);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("result", "success");
@@ -82,9 +117,13 @@ public class ProgramApiController {
 
     //== 프로그램 참가자 관리 ==//
     @GetMapping("/{programId}/applicants")
-    public ResponseEntity programApplicationListGet(@PathVariable("programId") Long programId, @RequestParam("memberId") Long memberId) {
+    public ResponseEntity programApplicationListGet(HttpServletRequest request, @PathVariable("programId") Long programId) {
+
+        log.info("Request endpoint : GET /api/programs/{" + programId + "}/applicants");
+
+        long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
         if(!isHost(programId, memberId)) {
-            log.error("권한이 없습니다.");
+            throw new NoAuthorityException("권한이 없는 유저 요청 입니다.");
         }
 
         ProgramInfoDto programInfo = programService.getProgramInfo(programId);
@@ -101,11 +140,15 @@ public class ProgramApiController {
 
     //== 프로그램 참가 승인 ==//
     @PostMapping("/{programId}/applicants/accept")
-    public ResponseEntity applicantAccept(@RequestBody ApplyRequestDto member,
+    public ResponseEntity applicantAccept(HttpServletRequest request,
+                                          @RequestBody ApplyRequestDto member,
                                           @PathVariable("programId") Long programId) {
-        // 로그인 멤버에 대한 정보 수신하는 것이 필요함
-        if(!isHost(programId, member.getMemberId())) {
-            log.error("권한이 없습니다.");
+
+        log.info("Request endpoint : POST /api/programs/{" + programId + "}/applicants/accept");
+
+        long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
+        if(!isHost(programId, memberId)) {
+            throw new NoAuthorityException("권한이 없는 유저 요청 입니다.");
         }
         programService.approval(programId, member.getMemberId());
 
@@ -116,12 +159,15 @@ public class ProgramApiController {
 
     //== 프로그램 참가 거절 ==//
     @PostMapping("/{programId}/applicants/reject")
-    public ResponseEntity applicantReject(@RequestBody ApplyRequestDto member,
+    public ResponseEntity applicantReject(HttpServletRequest request,
+                                          @RequestBody ApplyRequestDto member,
                                           @PathVariable("programId") Long programId) {
-        // 요청자 해당 프로그램 호스트 판별
-        // 로그인 멤버에 대한 정보 수신하는 것이 필요함
-        if(!isHost(programId, member.getMemberId())) {
-            log.error("권한 없음");
+
+        log.info("Request endpoint : POST /api/programs/{" + programId + "}/applicants/reject");
+
+        long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
+        if(!isHost(programId, memberId)) {
+            throw new NoAuthorityException("권한이 없는 유저 요청 입니다.");
         }
         programService.reject(programId, member.getMemberId());
         Map<String, String> result = new HashMap<>();

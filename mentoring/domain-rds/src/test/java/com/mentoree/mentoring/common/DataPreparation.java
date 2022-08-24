@@ -46,6 +46,16 @@ public class DataPreparation {
                 .build();
         Program savedProgram = programRepository.save(preProgram);
 
+        Program preProgramB = Program.builder()
+                .goal("testGoalB")
+                .maxMember(5)
+                .dueDate(LocalDate.now().plusDays(5))
+                .description("testDescB")
+                .category(Category.IT)
+                .title("testProgramB")
+                .build();
+        Program savedProgramB = programRepository.save(preProgramB);
+
         Participant preParticipantA = Participant.builder()
                 .isHost(true)
                 .memberId(1L)
@@ -65,6 +75,16 @@ public class DataPreparation {
                 .nickname("testNick")
                 .build();
         Participant savedParticipantB = participantRepository.save(preParticipantB);
+
+        Participant preParticipantC = Participant.builder()
+                .isHost(true)
+                .memberId(1L)
+                .approval(false)
+                .role(ProgramRole.MENTOR)
+                .program(preProgramB)
+                .nickname("testNick")
+                .build();
+        Participant savedParticipantC = participantRepository.save(preParticipantC);
 
         Mission preMission = Mission.builder()
                 .title("testMission")
@@ -90,11 +110,13 @@ public class DataPreparation {
         Board savedBoard = boardRepository.save(preBoard);
 
         entityMap.put("programA", savedProgram);
+        entityMap.put("programB", savedProgramB);
         entityMap.put("missionA", savedMission);
         entityMap.put("missionB", savedMissionB);
         entityMap.put("boardA", savedBoard);
         entityMap.put("participantA", savedParticipantA);
         entityMap.put("participantB", savedParticipantB);
+        entityMap.put("participantC", savedParticipantC);
 
     }
 

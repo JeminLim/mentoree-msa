@@ -134,25 +134,27 @@ public class ProgramApiTest {
                         .param("page", "0")
                         .param("memberId", "3")
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.program.size()").value(2))
-                .andExpect(jsonPath("$.program[0].title").value("testProgram"))
+                .andExpect(jsonPath("$.programList.size()").value(2))
+                .andExpect(jsonPath("$.programList[0].title").value("testProgram"))
+                .andExpect(jsonPath("$.hasNext").value(false))
                 .andDo(
                         document("/get/api/programs/list",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestParameters (
                                 parameterWithName("page").description("Loaded page"),
-                                parameterWithName("memberId").description("Login member pk")
+                                parameterWithName("memberId").description("Login member pk. If this field is absent, return all programs regardless of participation")
                         ), responseFields(
-                                fieldWithPath("program").description("Program info list regardless of user's interest"),
-                                fieldWithPath("program[].id").description("Program pk"),
-                                fieldWithPath("program[].title").description("Program title to create"),
-                                fieldWithPath("program[].goal").description("Program goal"),
-                                fieldWithPath("program[].description").description("Program description"),
-                                fieldWithPath("program[].maxMember").description("Maximum member can be able to participate program"),
-                                fieldWithPath("program[].category").description("Program's category"),
-                                fieldWithPath("program[].dueDate").description("due date of recruitment"),
-                                fieldWithPath("program[].mentor").description("List of member's nickname participated as mentor for program")
+                                fieldWithPath("programList").description("Program info list regardless of user's interest"),
+                                fieldWithPath("programList[].id").description("Program pk"),
+                                fieldWithPath("programList[].title").description("Program title to create"),
+                                fieldWithPath("programList[].goal").description("Program goal"),
+                                fieldWithPath("programList[].description").description("Program description"),
+                                fieldWithPath("programList[].maxMember").description("Maximum member can be able to participate program"),
+                                fieldWithPath("programList[].category").description("Program's category"),
+                                fieldWithPath("programList[].dueDate").description("due date of recruitment"),
+                                fieldWithPath("programList[].mentor").description("List of member's nickname participated as mentor for program"),
+                                fieldWithPath("hasNext").description("Whether next page is exist or not")
                         )
                 ));
     }
@@ -161,14 +163,15 @@ public class ProgramApiTest {
     @WithMockUser(username = "testA@email.com", password="", roles = "USER")
     @DisplayName("추천_프로그램_리스트_신청")
     void 추천_프로그램_리스트_신청() throws Exception {
-
         mockMvc.perform(
                 get("/api/programs/list/recommend")
+                        .header("X-Authorization-Id", "3")
                         .param("page", "0")
                         .param("memberId", "3")
         ).andExpect(status().isOk())
-        .andExpect(jsonPath("$.program.size()").value(1))
-                .andExpect(jsonPath("$.program[0].title").value("testProgramB"))
+        .andExpect(jsonPath("$.programRecommendList.size()").value(1))
+                .andExpect(jsonPath("$.programRecommendList[0].title").value("testProgramB"))
+                .andExpect(jsonPath("$.hasNext").value(false))
         .andDo(
                 document("/get/api/programs/list/recommend",
                         preprocessRequest(prettyPrint()),
@@ -177,15 +180,16 @@ public class ProgramApiTest {
                                 parameterWithName("page").description("Loaded page"),
                                 parameterWithName("memberId").description("Login member pk")
                         ), responseFields(
-                                fieldWithPath("program").description("Program info list regardless of user's interest"),
-                                fieldWithPath("program[].id").description("Program pk"),
-                                fieldWithPath("program[].title").description("Program title to create"),
-                                fieldWithPath("program[].goal").description("Program goal"),
-                                fieldWithPath("program[].description").description("Program description"),
-                                fieldWithPath("program[].maxMember").description("Maximum member can be able to participate program"),
-                                fieldWithPath("program[].category").description("Program's category"),
-                                fieldWithPath("program[].dueDate").description("due date of recruitment"),
-                                fieldWithPath("program[].mentor").description("List of member's nickname participated as mentor for program")
+                                fieldWithPath("programRecommendList").description("Program info list regardless of user's interest"),
+                                fieldWithPath("programRecommendList[].id").description("Program pk"),
+                                fieldWithPath("programRecommendList[].title").description("Program title to create"),
+                                fieldWithPath("programRecommendList[].goal").description("Program goal"),
+                                fieldWithPath("programRecommendList[].description").description("Program description"),
+                                fieldWithPath("programRecommendList[].maxMember").description("Maximum member can be able to participate program"),
+                                fieldWithPath("programRecommendList[].category").description("Program's category"),
+                                fieldWithPath("programRecommendList[].dueDate").description("due date of recruitment"),
+                                fieldWithPath("programRecommendList[].mentor").description("List of member's nickname participated as mentor for program"),
+                                fieldWithPath("hasNext").description("Whether next page is exist or not")
                         )
                 ));
     }
@@ -200,15 +204,17 @@ public class ProgramApiTest {
         mockMvc.perform(
                     // PathVariable 을 사용할 때는 RestDocs 에 있는 get을 사용하자
                     RestDocumentationRequestBuilders.get("/api/programs/{programId}", 1L)
-                ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(program.getId()))
-                .andExpect(jsonPath("$.title").value(program.getTitle()))
-                .andExpect(jsonPath("$.category").value(program.getCategory().getValue()))
-                .andExpect(jsonPath("$.maxMember").value(program.getMaxMember()))
-                .andExpect(jsonPath("$.goal").value(program.getGoal()))
-                .andExpect(jsonPath("$.description").value(program.getDescription()))
-                .andExpect(jsonPath("$.dueDate").value(program.getDueDate().toString()))
-                .andExpect(jsonPath("$.mentor.size()").value("0"))
+                            .header("X-Authorization-Id", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.programInfo.id").value(program.getId()))
+                .andExpect(jsonPath("$.programInfo.title").value(program.getTitle()))
+                .andExpect(jsonPath("$.programInfo.category").value(program.getCategory().getValue()))
+                .andExpect(jsonPath("$.programInfo.maxMember").value(program.getMaxMember()))
+                .andExpect(jsonPath("$.programInfo.goal").value(program.getGoal()))
+                .andExpect(jsonPath("$.programInfo.description").value(program.getDescription()))
+                .andExpect(jsonPath("$.programInfo.dueDate").value(program.getDueDate().toString()))
+                .andExpect(jsonPath("$.programInfo.mentor.size()").value("0"))
+                .andExpect(jsonPath("$.isHost").value(true))
                 .andDo(
                         document("/get/api/programs/programId",
                                 preprocessRequest(prettyPrint()),
@@ -216,14 +222,15 @@ public class ProgramApiTest {
                                 pathParameters(
                                         parameterWithName("programId").description("Program pk want to get")
                                 ), responseFields(
-                                        fieldWithPath("id").description("Program pk"),
-                                        fieldWithPath("title").description("Program title to create"),
-                                        fieldWithPath("goal").description("Program goal"),
-                                        fieldWithPath("description").description("Program description"),
-                                        fieldWithPath("maxMember").description("Maximum member can be able to participate program"),
-                                        fieldWithPath("category").description("Program's category"),
-                                        fieldWithPath("dueDate").description("due date of recruitment"),
-                                        fieldWithPath("mentor").description("List of member's nickname participated as mentor for program")
+                                        fieldWithPath("programInfo.id").description("Program pk"),
+                                        fieldWithPath("programInfo.title").description("Program title to create"),
+                                        fieldWithPath("programInfo.goal").description("Program goal"),
+                                        fieldWithPath("programInfo.description").description("Program description"),
+                                        fieldWithPath("programInfo.maxMember").description("Maximum member can be able to participate program"),
+                                        fieldWithPath("programInfo.category").description("Program's category"),
+                                        fieldWithPath("programInfo.dueDate").description("due date of recruitment"),
+                                        fieldWithPath("programInfo.mentor").description("List of member's nickname participated as mentor for program"),
+                                        fieldWithPath("isHost").description("Whether member who request is host of the program or not")
                                 )
                 ));
     }
@@ -271,11 +278,11 @@ public class ProgramApiTest {
     void 프로그램_신청자_관리_리스트_요청() throws Exception {
 
         Program programA = (Program) data.get("programA");
-
         mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/programs/{programId}/applicants", 1L)
-                        .param("memberId", "1")
-                ).andExpect(status().isOk())
+                        .header("X-Authorization-Id", "1")
+                        .param("memberId", "1"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.programInfo.title").value(programA.getTitle()))
                 .andExpect(jsonPath("$.programInfo.id").value(programA.getId()))
                 .andExpect(jsonPath("$.applicants.size()").value(1))
@@ -320,12 +327,12 @@ public class ProgramApiTest {
     void 참가자_승인_요청() throws Exception {
 
         Program programA = (Program) data.get("programA");
-
         ApplyRequestDto requestForm = new ApplyRequestDto(2L, "testNickB", programA.getId(), "want to join", "MENTEE");
         String requestBody = objectMapper.writeValueAsString(requestForm);
 
         mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/programs/{programId}/applicants/accept", programA.getId())
+                        .header("X-Authorization-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())
@@ -363,6 +370,7 @@ public class ProgramApiTest {
 
         mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/programs/{programId}/applicants/reject", programA.getId())
+                        .header("X-Authorization-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())
@@ -387,7 +395,6 @@ public class ProgramApiTest {
                                 )
                         )
                 );
-
     }
 
 }

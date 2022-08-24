@@ -1,6 +1,5 @@
 package com.mentoree.mentoring.dto;
 
-import com.mentoree.common.domain.DataTransferObject;
 import com.mentoree.mentoring.domain.entity.Mission;
 import com.mentoree.mentoring.domain.entity.Program;
 import lombok.Builder;
@@ -10,12 +9,16 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class MissionInfoDto extends DataTransferObject {
+public class MissionInfoDto implements Serializable {
+
+    @NotNull
+    private Long programId;
 
     private Long missionId;
 
@@ -33,7 +36,8 @@ public class MissionInfoDto extends DataTransferObject {
     private LocalDate dueDate;
 
     @Builder
-    public MissionInfoDto(Long missionId, String missionTitle, String content, String missionGoal, LocalDate dueDate) {
+    public MissionInfoDto(Long programId, Long missionId, String missionTitle, String content, String missionGoal, LocalDate dueDate) {
+        this.programId = programId;
         this.missionId = missionId;
         this.missionTitle = missionTitle;
         this.content = content;
@@ -48,6 +52,17 @@ public class MissionInfoDto extends DataTransferObject {
                 .content(content)
                 .dueDate(dueDate)
                 .program(program)
+                .build();
+    }
+
+    public static MissionInfoDto of(Mission mission) {
+        return MissionInfoDto.builder()
+                .programId(mission.getProgram().getId())
+                .missionId(mission.getId())
+                .missionTitle(mission.getTitle())
+                .missionGoal(mission.getGoal())
+                .content(mission.getContent())
+                .dueDate(mission.getDueDate())
                 .build();
     }
 

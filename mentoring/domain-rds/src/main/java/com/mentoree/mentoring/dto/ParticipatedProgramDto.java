@@ -1,17 +1,17 @@
 package com.mentoree.mentoring.dto;
 
-import com.mentoree.common.domain.DataTransferObject;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class ParticipatedProgramDto extends DataTransferObject {
+public class ParticipatedProgramDto implements Serializable {
 
     @NotNull
     private Long id;

@@ -1,5 +1,6 @@
 package com.mentoree.mentoring.domain;
 
+import com.mentoree.common.interenal.ParticipatedProgram;
 import com.mentoree.mentoring.common.DataPreparation;
 import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
@@ -114,6 +115,20 @@ public class ParticipantRepositoryTest {
         boolean result = participantRepository.isHost(program.getId(), 1L) > 0;
         //then
         assertThat(result).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("참가_프로그램_내부_요청_테스트")
+    void 참가_프로그램_내부_요청_테스트() {
+        //given
+        Program programA = (Program) entity.get("programA");
+        Program programB = (Program) entity.get("programB");
+
+        //when
+        List<ParticipatedProgram> allPrograms = participantRepository.findAllProgramByMemberId(1L);
+        //then
+        assertThat(allPrograms.size()).isEqualTo(2);
+
     }
 
 }

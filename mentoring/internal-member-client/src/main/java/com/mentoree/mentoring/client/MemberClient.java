@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "Member-client", url = "localhost:8080")
+import java.util.List;
+
+@FeignClient(name = "MEMBER-SERVICE")
 public interface MemberClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/api/members/internal/{memberId}")
-    ResponseMember getMember(@PathVariable("memberId") Long memberId);
+    ResponseMember getMemberInfo(@PathVariable("memberId") Long memberId);
 
 }

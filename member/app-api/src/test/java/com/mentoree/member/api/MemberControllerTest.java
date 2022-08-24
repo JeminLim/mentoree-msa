@@ -1,8 +1,6 @@
 package com.mentoree.member.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mentoree.member.api.controller.MemberProfileApiController;
 import com.mentoree.member.domain.entity.Member;
 import com.mentoree.member.domain.entity.UserRole;
 import com.mentoree.member.dto.MemberInfo;
@@ -14,24 +12,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest
@@ -56,7 +50,7 @@ public class MemberControllerTest {
                 .email("test@email.com")
                 .link("link")
                 .nickname("testNickname")
-                .oAuth2Id("google")
+                .authId("google")
                 .role(UserRole.USER)
                 .build();
 
@@ -74,7 +68,7 @@ public class MemberControllerTest {
                 .nickname("testNick")
                 .link("link")
                 .build();
-        when(memberService.getMemberProfile(any(String.class))).thenReturn(memberInfo);
+        when(memberService.getMemberProfile(any(Long.class))).thenReturn(memberInfo);
         //when
         ResultActions result = mockMvc.perform(
                 get("/api/members/profile")
@@ -107,6 +101,7 @@ public class MemberControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 post("/api/members/profile")
+                        .header("X-Authorization-User", "test@email.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())

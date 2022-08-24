@@ -1,5 +1,6 @@
 package com.mentoree.member.domain.entity;
 
+import com.mentoree.common.domain.BaseTimeEntity;
 import com.mentoree.common.domain.Category;
 import lombok.*;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -17,12 +19,18 @@ import static javax.persistence.FetchType.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
     @Column(name = "member_id")
     private Long id;
+
+    /**
+     * oauth의 특성으로 각 계정마다 고유 번호를 이용해 식별
+     */
+    @Column
+    private String authId;
 
     @Enumerated(EnumType.STRING)
     @Column
@@ -32,28 +40,22 @@ public class Member {
     @Column
     private String email;
     @Column
-    private String oAuth2Id;
-    @Column
     private String nickname;
     @Column
     private String link;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<ParticipatedProgram> participatedPrograms = new ArrayList<>();
-
-    @ElementCollection(fetch = LAZY)
-    private List<MemberInterest> interest = new ArrayList<>();
+    @OneToMany(mappedBy = "member", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberInterest> interest = new ArrayList<MemberInterest>();
 
     @Builder
-    public Member(String memberName, String email, String oAuth2Id, String nickname,
+    public Member(String memberName, String email, String authId, String nickname,
                   String link, UserRole role) {
         this.memberName = memberName;
-        this.oAuth2Id = oAuth2Id;
+        this.authId = authId;
         this.email = email;
         this.nickname = nickname;
         this.link = link;
         this.role = role;
-        IntStream.range(0, 3).forEach(index -> interest.add(new MemberInterest(Category.EMPTY)));
     }
 
     public Member updateMemberName(String memberName) {
@@ -61,22 +63,13 @@ public class Member {
         return this;
     }
 
-    public void updateInterest(List<String> interestList) {
-        if(interestList.size() > 0) {
-            IntStream.range(0, interest.size()).forEach(index -> {
-                if(index < interestList.size())
-                    interest.get(index).updateCategory(Category.valueOf(interestList.get(index)));
-            });
-        }
+    public void addInterest(List<MemberInterest> list) {
+        this.interest.clear();
+        this.interest.addAll(list);
     }
 
     public void updateNickname(String nickname) { this.nickname = nickname;}
 
     public void updateLink(String link) { this.link = link;}
-
-    public void participated(ParticipatedProgram program) {
-        this.participatedPrograms.add(program);
-    }
-
 
 }

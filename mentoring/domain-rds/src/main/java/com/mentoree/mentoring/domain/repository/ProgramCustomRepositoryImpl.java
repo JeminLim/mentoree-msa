@@ -77,10 +77,10 @@ public class ProgramCustomRepositoryImpl implements ProgramCustomRepository {
 
     @Override
     public Optional<ProgramInfoDto> findProgramInfoById(Long programId) {
-        Program program = queryFactory.selectFrom(QProgram.program)
-                .where(QProgram.program.id.eq(programId))
+        Program findProgram = queryFactory.selectFrom(program)
+                .where(program.id.eq(programId))
                 .fetchOne();
-        return Optional.ofNullable(ProgramInfoDto.of(program));
+        return Optional.ofNullable(ProgramInfoDto.of(findProgram));
     }
 
     private BooleanExpression notInParticipatedPrograms(List<Long> programIds) {

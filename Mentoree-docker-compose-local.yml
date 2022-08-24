@@ -1,0 +1,211 @@
+version: "3"
+
+services:
+  mentoree-mariadb:
+    image: wer080/mentoree-mariadb:1.0
+    container_name: mentoree-mariadb
+    ports:
+      - "3306:3306"
+    networks:
+      - mentoree-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports: 
+      - "15672:15672" 
+      - "5672:5672" 
+      - "15671:15671" 
+      - "5671:5671" 
+      - "4369:4369"
+    networks:
+      - mentoree-network
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  mentoree-redis: 
+    image: redis
+    container_name: mentoree-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mentoree-network
+    restart: unless-stopped
+
+  mentoree-front:
+    image: wer080/mentoree-front:1.0
+    container_name: mentoree-front
+    ports:
+      - "8081:8081"
+    networks:
+      - mentoree-network
+
+  infra-config-server:
+    image: wer080/infra-config-server:1.0
+    container_name: infra-config-server
+    depends_on:
+      - rabbitmq
+    links:
+      - rabbitmq
+    ports:
+      - "8888:8888"
+    networks:
+      - mentoree-network
+    environment:
+      - spring.rabbitmq.host=rabbitmq
+
+  infra-eureka-server:
+    image: wer080/infra-eureka-server:1.0
+    container_name: infra-eureka-server
+    depends_on:
+      - infra-config-server
+    ports:
+      - "8761:8761"
+    networks:
+      - mentoree-network
+    links:
+      - infra-config-server
+    environment:
+      - spring.cloud.config.uri=http://infra-config-server:8888
+
+  infra-api-gateway-service:
+    image: wer080/infra-api-gateway-service:1.0
+    container_name: infra-api-gateway-service
+    depends_on:
+      - mentoree-front
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - rabbitmq
+    links:
+      - mentoree-front
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - rabbitmq
+    ports:
+      - "8000:8000"
+    networks:
+      - mentoree-network
+    environment:
+      - front.url=http://localhost:8081
+      - spring.cloud.config.uri=http://infra-config-server:8888
+      - spring.redis.host=mentoree-redis
+      - spring.rabbitmq.host=rabbitmq
+      - Kafka.client.url=172.18.0.101:9092
+      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
+      - server.url=http://localhost:8000
+
+  member-auth-service:
+    image: wer080/member-auth-service:1.0
+    container_name: member-auth-service
+    depends_on:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    links:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    networks:
+      - mentoree-network
+    environment:
+      - spring.cloud.config.uri=http://infra-config-server:8888
+      - spring.redis.host=mentoree-redis
+      - spring.rabbitmq.host=rabbitmq
+      - Kafka.client.url=172.18.0.101:9092
+      - Feign.url=http://localhost:8000
+      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
+      # - spring.datasource.url=jdbc:mariadb://mentoree-mariadb:3306/mentoree_member?characterEncoding=UTF-8
+      - PROFILE=dev
+
+  member-service:
+    image: wer080/member-service:1.0
+    container_name: member-service
+    depends_on:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - rabbitmq
+      - mentoree-mariadb
+    links:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    networks:
+      - mentoree-network
+    environment:
+      - spring.cloud.config.uri=http://infra-config-server:8888
+      - spring.redis.host=mentoree-redis
+      - spring.rabbitmq.host=rabbitmq
+      - Kafka.client.url=172.18.0.101:9092
+      - Feign.url=http://localhost:8000
+      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
+      # - spring.datasource.url=jdbc:mariadb://mentoree-mariadb:3306/mentoree_member?characterEncoding=UTF-8
+      - PROFILE=dev
+
+  mentoring-service:
+    image: wer080/mentoring-service:1.0
+    container_name: mentoring-service
+    depends_on:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    links:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    networks:
+      - mentoree-network
+    environment:
+      - spring.cloud.config.uri=http://infra-config-server:8888
+      - spring.redis.host=mentoree-redis
+      - spring.rabbitmq.host=rabbitmq
+      - Kafka.client.url=172.18.0.101:9092
+      - Feign.url=http://localhost:8000
+      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
+      # - spring.datasource.url=jdbc:mariadb://mentoree-mariadb:3306/mentoree_mentoring?characterEncoding=UTF-8
+      - PROFILE=dev
+
+  reply-service:
+    image: wer080/reply-service:1.0
+    container_name: reply-service
+    depends_on:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    links:
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - mentoree-mariadb
+      - rabbitmq
+    networks:
+      - mentoree-network
+    environment:
+      - spring.cloud.config.uri=http://infra-config-server:8888
+      - spring.redis.host=mentoree-redis
+      - spring.rabbitmq.host=rabbitmq
+      - Kafka.client.url=172.18.0.101:9092
+      - Feign.url=http://localhost:8000
+      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
+      # - spring.datasource.url=jdbc:mariadb://mentoree-mariadb:3306/mentoree_reply?characterEncoding=UTF-8
+      - PROFILE=dev
+
+networks:
+  mentoree-network:
+    name: mentoree-network
+    external: true

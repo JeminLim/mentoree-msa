@@ -96,6 +96,7 @@ public class DataPreparation {
 
         Board preBoard = Board.builder()
                 .memberId(2L)
+                .nickname("testNick")
                 .mission(preMission)
                 .content("testBoard")
                 .build();
