@@ -1,0 +1,29 @@
+language: java
+jdk:
+  - openjdk11
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+
+before_script:
+#  - cd infra/eureka-server
+#  - cd infra/config-server
+  - cd infra/api-gateway-service
+#  - cd member/app-api
+#  - cd member/app-auth-server
+#  - cd mentoring/app-api
+#  - cd reply/app-api
+
+before_install:
+  chmod +x gradlew
+
+notifications:
+  email:
+    recipients:
+      - wer0801@gmail.com
