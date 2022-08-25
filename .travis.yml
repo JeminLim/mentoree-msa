@@ -11,14 +11,8 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
 
-before_script:
-#  - cd infra/eureka-server
-#  - cd infra/config-server
-  - cd infra/api-gateway-service
-#  - cd member/app-api
-#  - cd member/app-auth-server
-#  - cd mentoring/app-api
-#  - cd reply/app-api
+script:
+  - "./gradlew :infra-api-gateway-service:build"
 
 before_install:
   chmod +x gradlew
