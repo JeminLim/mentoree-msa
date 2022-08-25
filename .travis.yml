@@ -12,7 +12,10 @@ cache:
     - '$HOME/.gradle'
 
 script:
+  - echo "> build api-gateway-service"
   - "./gradlew :infra-api-gateway-service:build"
+  - echo "> build eureka-server"
+  - "./gradlew :infra-eureka-server:build"
 
 before_install:
   chmod +x gradlew
