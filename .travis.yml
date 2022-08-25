@@ -16,9 +16,35 @@ script:
   - "./gradlew :infra-api-gateway-service:build"
   - echo "> build eureka-server"
   - "./gradlew :infra-eureka-server:build"
+  - echo "> build config-server"
+  - "./gradlew :infra-config-server:build"
+  - echo "> build member-service"
+  - "./gradlew :member-app-api:build"
+  - echo "> build member-auth-service"
+  - "./gradlew :member-app-auth-server:build"
+  - echo "> build mentoring-service"
+  - "./gradlew :mentoring-app-api:build"
+  - echo "> build reply-service"
+  - "./gradlew :reply-app-api:build"
 
 before_install:
   chmod +x gradlew
+
+before_deploy:
+  - zip -r mentoree-webservice *
+  - mkdir -p deploy
+  - mv mentoree-webservice.zip deploy/mentoree-webservice.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: mentoree-build
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private #zip 파일 접근 권한 private
+    local_dir: deploy
+    wait-until-deployed: true
 
 notifications:
   email:
