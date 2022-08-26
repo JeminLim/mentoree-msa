@@ -45,6 +45,8 @@ deploy:
     acl: private #zip 파일 접근 권한 private
     local_dir: deploy
     wait-until-deployed: true
+    on:
+      all_branches: true
 
 #  - provider: codedeploy
 #    access_key_id: $AWS_ACCESS_KEY
