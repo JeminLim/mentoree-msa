@@ -46,16 +46,16 @@ deploy:
     local_dir: deploy
     wait-until-deployed: true
 
-  - provider: codedeploy
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
-    bucket: mentoree-build #s3 버킷
-    key: mentoree-webservice.zip #압축 파일 전달
-    bundle_type: zip
-    application: mentoree-webservice-codedeploy #웹 콘솔에서 등록한 CodeDeploy 애플리케이션
-    deployment_group: mentoree-webservice-group #CodeDeploy 배포 그룹
-    region: ap-northeast-2
-    wait-until-deployed: true
+#  - provider: codedeploy
+#    access_key_id: $AWS_ACCESS_KEY
+#    secret_access_key: $AWS_SECRET_KEY
+#    bucket: mentoree-build #s3 버킷
+#    key: mentoree-webservice.zip #압축 파일 전달
+#    bundle_type: zip
+#    application: mentoree-webservice-codedeploy #웹 콘솔에서 등록한 CodeDeploy 애플리케이션
+#    deployment_group: mentoree-webservice-group #CodeDeploy 배포 그룹
+#    region: ap-northeast-2
+#    wait-until-deployed: true
 
 notifications:
   email:
