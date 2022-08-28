@@ -8,6 +8,7 @@ build/
 ## Exclude ##
 /infra/config-server/src/main/resources/application.yml
 /infra/config-server/apiEncryptionKey.jks
+config-info.tar
 
 ##oauth##
 !**/src/main/resources/application-oauth.yml

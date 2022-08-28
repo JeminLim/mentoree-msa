@@ -1,65 +1,64 @@
 language: java
 jdk:
-  - openjdk11
-
+- openjdk11
 branches:
   only:
-    - master
-
+  - master
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.gradle'
-
-script:
-  - echo "> build api-gateway-service"
-  - "./gradlew :infra-api-gateway-service:build"
-  - echo "> build eureka-server"
-  - "./gradlew :infra-eureka-server:build"
-  - echo "> build config-server"
-  - "./gradlew :infra-config-server:build"
-  - echo "> build member-service"
-  - "./gradlew :member-app-api:build"
-  - echo "> build member-auth-service"
-  - "./gradlew :member-app-auth-server:build"
-  - echo "> build mentoring-service"
-  - "./gradlew :mentoring-app-api:build"
-  - echo "> build reply-service"
-  - "./gradlew :reply-app-api:build"
-
+  - "$HOME/.m2/repository"
+  - "$HOME/.gradle"
 before_install:
-  chmod +x gradlew
-
+- openssl aes-256-cbc -K $encrypted_2225e3c30702_key -iv $encrypted_2225e3c30702_iv
+  -in config-info.tar.enc -out config-info.tar -d
+- chmod +x gradlew
+- tar xvf config-info.tar
+script:
+- echo "> build api-gateway-service"
+- "./gradlew :infra-api-gateway-service:build"
+- echo "> build eureka-server"
+- "./gradlew :infra-eureka-server:build"
+- echo "> build config-server"
+- "./gradlew :infra-config-server:build"
+- echo "> build member-service"
+- "./gradlew :member-app-api:build"
+- echo "> build member-auth-service"
+- "./gradlew :member-app-auth-server:build"
+- echo "> build mentoring-service"
+- "./gradlew :mentoring-app-api:build"
+- echo "> build reply-service"
+- "./gradlew :reply-app-api:build"
+after_success:
+  - mv application.yml /infra/config-server/src/main/resources
+  - mv apiEncryptionKey.jks /infra/config-server
 before_deploy:
-  - zip -r mentoree-webservice *
-  - mkdir -p deploy
-  - mv mentoree-webservice.zip deploy/mentoree-webservice.zip
-
+- zip -r mentoree-webservice *
+- mkdir -p deploy
+- mv mentoree-webservice.zip deploy/mentoree-webservice.zip
 deploy:
-  - provider: s3
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
-    bucket: mentoree-build
-    region: ap-northeast-2
-    skip_cleanup: true
-    acl: private #zip 파일 접근 권한 private
-    local_dir: deploy
-    wait-until-deployed: true
-    on:
-      all_branches: true
+- provider: s3
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
+  bucket: mentoree-build
+  region: ap-northeast-2
+  skip_cleanup: true
+  acl: private
+  local_dir: deploy
+  wait-until-deployed: true
+  on:
+    all_branches: true
 
-  - provider: codedeploy
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
-    bucket: mentoree-build #s3 버킷
-    key: mentoree-webservice.zip #압축 파일 전달
-    bundle_type: zip
-    application: mentoree-webservice-codedeploy #웹 콘솔에서 등록한 CodeDeploy 애플리케이션
-    deployment_group: mentoree-webservice-group #CodeDeploy 배포 그룹
-    region: ap-northeast-2
-    wait-until-deployed: true
-
+- provider: codedeploy
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
+  bucket: mentoree-build
+  key: mentoree-webservice.zip
+  bundle_type: zip
+  application: mentoree-webservice-codedeploy
+  deployment_group: mentoree-webservice-group
+  region: ap-northeast-2
+  wait-until-deployed: true
 notifications:
   email:
     recipients:
-      - wer0801@gmail.com
+    - wer0801@gmail.com
