@@ -9,8 +9,7 @@ cache:
   - "$HOME/.m2/repository"
   - "$HOME/.gradle"
 before_install:
-- openssl aes-256-cbc -K $encrypted_2225e3c30702_key -iv $encrypted_2225e3c30702_iv
-  -in config-info.tar.enc -out config-info.tar -d
+- openssl aes-256-cbc -K $encrypted_2225e3c30702_key -iv $encrypted_2225e3c30702_iv -in config-info.tar.enc -out config-info.tar -d
 - chmod +x gradlew
 - tar xvf config-info.tar
 script:
