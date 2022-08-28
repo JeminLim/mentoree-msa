@@ -28,8 +28,8 @@ script:
 - echo "> build reply-service"
 - "./gradlew :reply-app-api:build"
 after_success:
-  - mv application.yml /infra/config-server/src/main/resources
-  - mv apiEncryptionKey.jks /infra/config-server
+- mv application.yml /infra/config-server/src/main/resources
+- mv apiEncryptionKey.jks /infra/config-server
 before_deploy:
 - zip -r mentoree-webservice *
 - mkdir -p deploy
@@ -46,7 +46,6 @@ deploy:
   wait-until-deployed: true
   on:
     all_branches: true
-
 - provider: codedeploy
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
