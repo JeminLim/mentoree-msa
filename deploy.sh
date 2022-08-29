@@ -15,19 +15,20 @@ MENTORING_SERVICE_DIR=$BASE_DIR/mentoring/app-api/
 REPLY_SERVICE_DIR=$BASE_DIR/reply/app-api/
 
 echo "> 현재 실행 중인 Docker 컨테이너 Pid 확인"
-CURRENT_PID=$(sudo docker container ls -q)
+CURRENT_PID=$(docker container ls -q)
 
 if [ -z $CURRENT_PID ]
 then
   echo "> 현재 구동 중인 컨테이너가 없습니다."
 else
   echo "> 현재 구동 중인 컨테이너를 종료합니다. PID = $CURRENT_PID "
-  sudo docker stop $CURRENT_PID
+  docker stop $CURRENT_PID
+  sleep 5
+  docker rm $CURRENT_PID
   sleep 5
 fi
 
 echo "> 이미지 파일 빌드 ... "
-
 echo ">>> Config server 이미지 빌드"
 cd CONFIG_SERVER_DIR
 docker build -t $DOCKER_USER_ID/infra-config-server:$APP_VERSION

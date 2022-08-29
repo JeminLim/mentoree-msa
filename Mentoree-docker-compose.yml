@@ -10,6 +10,7 @@ services:
       - "15671:15671" 
       - "5671:5671" 
       - "4369:4369"
+    restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
@@ -21,7 +22,7 @@ services:
     container_name: mentoree-redis
     ports:
       - "6379:6379"
-    restart: unless-stopped
+    restart: always
     networks:
       - mentoree-network
 
@@ -31,6 +32,7 @@ services:
     command: real
     ports:
       - "8081:8081"
+    restart: always
     networks:
       - mentoree-network
 
@@ -43,6 +45,7 @@ services:
       - rabbitmq
     ports:
       - "8888:8888"
+    restart: always
     environment:
       - spring.rabbitmq.host=rabbitmq 
     networks:
@@ -55,6 +58,7 @@ services:
       - infra-config-server
     ports:
       - "8761:8761"
+    restart: always
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
     networks:
@@ -78,6 +82,7 @@ services:
       - rabbitmq
     ports:
       - "8000:8000"
+    restart: always
     environment:
       - front.url=http://mentoree-front:8081
       - spring.cloud.config.uri=http://infra-config-server:8888
@@ -110,6 +115,7 @@ services:
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
+    restart: always
     networks:
       - mentoree-network
 
@@ -134,6 +140,7 @@ services:
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
+    restart: always
     networks:
       - mentoree-network
 
@@ -158,6 +165,7 @@ services:
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
+    restart: always
     networks:
       - mentoree-network
 
@@ -182,6 +190,7 @@ services:
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
+    restart: always
     networks:
       - mentoree-network
 
