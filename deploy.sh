@@ -3,14 +3,16 @@
 DOCKER_USER_ID=wer080
 APP_VERSION=1.0
 
-CONFIG_SERVER_DIR=~/infra/config-server/
-EUREKA_SERVER_DIR=~/infra/eureka-server/
-API_GATEWAY_SERVICE_DIR=~/infra/api-gateway-service/
+BASE_DIR=/home/ec2-user/app/mentoree-webservice/zip
 
-MEMBER_SERVICE_DIR=~/member/app-api/
-MEMBER_AUTH_SERVICE_DIR=~/member/app-auth-server/
-MENTORING_SERVICE_DIR=~/mentoring/app-api/
-REPLY_SERVICE_DIR=~/reply/app-api/
+CONFIG_SERVER_DIR=$BASE_DIR/infra/config-server/
+EUREKA_SERVER_DIR=$BASE_DIR/infra/eureka-server/
+API_GATEWAY_SERVICE_DIR=$BASE_DIR/infra/api-gateway-service/
+
+MEMBER_SERVICE_DIR=$BASE_DIR/member/app-api/
+MEMBER_AUTH_SERVICE_DIR=$BASE_DIR/member/app-auth-server/
+MENTORING_SERVICE_DIR=$BASE_DIR/mentoring/app-api/
+REPLY_SERVICE_DIR=$BASE_DIR/reply/app-api/
 
 echo "> 현재 실행 중인 Docker 컨테이너 Pid 확인"
 CURRENT_PID=$(sudo docker container ls -q)
@@ -56,4 +58,4 @@ docker build -t $DOCKER_USER_ID/infra-config-server:$APP_VERSION
 
 echo "> Docker-compose 구동"
 cd ~
-docker-compose -f Mentoree-docker-compose.yml up -d
+docker-compose -f $BASE_DIR/Mentoree-docker-compose.yml up -d
