@@ -60,5 +60,5 @@ docker build -t $DOCKER_USER_ID/reply-service:$APP_VERSION
 echo "> Docker-compose 구동"
 cd ~
 docker-compose -f $BASE_DIR/Mentoree-docker-compose-infra.yml up -d
-sleep 30
+sleep 180
 docker-compose -f $BASE_DIR/Mentoree-docker-compose-service.yml up -d

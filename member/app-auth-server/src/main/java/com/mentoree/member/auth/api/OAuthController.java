@@ -24,7 +24,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class OAuthController {
+
 
     /** get config info */
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -67,6 +70,7 @@ public class OAuthController {
     private final JwtUtils jwtUtils;
     private final TokenService tokenService;
     private final ObjectMapper objectMapper;
+    private final Environment environment;
 
     private EncryptUtils encryptUtils = new AESUtils();
 
@@ -208,9 +212,15 @@ public class OAuthController {
 
         MultiValueMap<String, String> accessTokenParams = new LinkedMultiValueMap<>();
         String tokenUri = "";
+        String redirectUri = "";
         if(provider.equals("google")) {
+            if(Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase("local")))
+                redirectUri = "http://localhost:8081/login/oauth2/code/google";
+            else
+                redirectUri = "http://ec2-43-200-50-181.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/google";
+
             accessTokenParams = accessTokenParams("authorization_code", code, googleClientId, googleClientSecret,
-                    "http://localhost:8081/login/oauth2/code/google", null);
+                    redirectUri, null);
             tokenUri = googleTokenUri;
         } else if (provider.equals("naver")) {
             accessTokenParams = accessTokenParams("authorization_code", code, naverClientId, naverClientSecret,
