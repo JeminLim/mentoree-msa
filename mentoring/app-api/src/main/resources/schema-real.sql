@@ -44,19 +44,19 @@ CREATE TABLE IF NOT EXISTS participant (
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS program (
-      program_id bigint NOT NULL AUTO_INCREMENT,
-      created_date datetime(6) NOT NULL,
-      modified_date datetime(6) NOT NULL,
-      category varchar(255),
-      cur_num integer NOT NULL,
-      description varchar(255),
-      due_date date,
-      goal varchar(255),
-      is_open bit NOT NULL,
-      max_member integer,
-      title varchar(255),
-      PRIMARY KEY (program_id)
+CREATE TABLE IF NOT EXISTS Programs (
+  program_id bigint NOT NULL AUTO_INCREMENT,
+  created_date datetime(6) NOT NULL,
+  modified_date datetime(6) NOT NULL,
+  category varchar(255),
+  cur_num integer NOT NULL,
+  description varchar(255),
+  due_date date,
+  goal varchar(255),
+  is_open bit NOT NULL,
+  max_member integer,
+  title varchar(255),
+  PRIMARY KEY (program_id)
 ) engine=INNODB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;

@@ -15,6 +15,7 @@ import static javax.persistence.FetchType.*;
 
 @Entity
 @Getter
+@Table(name = "Programs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Program extends BaseTimeEntity {
 

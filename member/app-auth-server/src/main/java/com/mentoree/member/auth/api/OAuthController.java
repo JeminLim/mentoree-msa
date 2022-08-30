@@ -219,6 +219,7 @@ public class OAuthController {
             else
                 redirectUri = "http://ec2-43-200-50-181.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/google";
 
+            log.info("redirect url = {}", redirectUri);
             accessTokenParams = accessTokenParams("authorization_code", code, googleClientId, googleClientSecret,
                     redirectUri, null);
             tokenUri = googleTokenUri;
