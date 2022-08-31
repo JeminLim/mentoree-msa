@@ -18,7 +18,7 @@ services:
       - spring.cloud.config.uri=http://infra-config-server:8888
       - spring.redis.host=http://mentoree-redis:6379
       - spring.rabbitmq.host=rabbitmq
-      - Kafka.client.url=http://43.200.50.181:9092
+      - Kafka.client.url=http://kafka:9092
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
@@ -43,7 +43,7 @@ services:
       - spring.cloud.config.uri=http://infra-config-server:8888
       - spring.redis.host=http://mentoree-redis:6379
       - spring.rabbitmq.host=rabbitmq
-      - Kafka.client.url=http://43.200.50.181:9092
+      - Kafka.client.url=http://kafka:9092
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
@@ -68,7 +68,7 @@ services:
       - spring.cloud.config.uri=http://infra-config-server:8888
       - spring.redis.host=http://mentoree-redis:6379
       - spring.rabbitmq.host=rabbitmq
-      - Kafka.client.url=http://43.200.50.181:9092
+      - Kafka.client.url=http://kafka:9092
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
@@ -93,7 +93,7 @@ services:
       - spring.cloud.config.uri=http://infra-config-server:8888
       - spring.redis.host=http://mentoree-redis:6379
       - spring.rabbitmq.host=rabbitmq
-      - Kafka.client.url=http://43.200.50.181:9092
+      - Kafka.client.url=http://kafka:9092
       - Feign.url=http://43.200.50.181:8000
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real

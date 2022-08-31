@@ -15,7 +15,7 @@ MENTORING_SERVICE_DIR=$BASE_DIR/mentoring/app-api/
 REPLY_SERVICE_DIR=$BASE_DIR/reply/app-api/
 
 echo "> 현재 실행 중인 Docker 컨테이너 Pid 확인"
-CURRENT_PID=$(docker container ls -q)
+CURRENT_PID=$(docker container ls -qa)
 
 if [ -z $CURRENT_PID ]
 then
