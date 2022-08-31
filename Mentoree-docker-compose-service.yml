@@ -8,11 +8,13 @@ services:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     links:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
@@ -24,7 +26,7 @@ services:
       - PROFILE=real
     restart: always
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   member-service:
     image: wer080/member-service:1.0
@@ -33,11 +35,13 @@ services:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     links:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
@@ -49,7 +53,7 @@ services:
       - PROFILE=real
     restart: always
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   mentoring-service:
     image: wer080/mentoring-service:1.0
@@ -58,11 +62,13 @@ services:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     links:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
@@ -74,7 +80,7 @@ services:
       - PROFILE=real
     restart: always
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   reply-service:
     image: wer080/reply-service:1.0
@@ -83,11 +89,13 @@ services:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     links:
       - infra-config-server
       - infra-eureka-server
       - mentoree-redis
+      - kafka
       - rabbitmq
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
@@ -99,9 +107,9 @@ services:
       - PROFILE=real
     restart: always
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
 networks:
-  mentoree-network:
-    name: mentoree-network
-    external: true
+  mentoree-network-net:
+    external:
+      name: mentoree-network

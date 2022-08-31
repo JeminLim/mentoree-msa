@@ -7,7 +7,8 @@ services:
     ports:
       - "2181:2181"
     networks:
-      - mentoree-network
+      mentoree-network-net:
+        ipv4_address: 172.18.0.100
   kafka:
     image: wurstmeister/kafka
     container_name: kafka
@@ -22,7 +23,8 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - mentoree-network
+      mentoree-network-net:
+        ipv4_address: 172.18.0.101
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -38,7 +40,7 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   mentoree-redis:
     image: redis
@@ -47,7 +49,7 @@ services:
       - "6379:6379"
     restart: always
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   mentoree-front:
     image: wer080/mentoree-front:1.0
@@ -57,7 +59,7 @@ services:
       - "8081:8081"
     restart: always
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   infra-config-server:
     image: wer080/infra-config-server:1.0
@@ -72,7 +74,7 @@ services:
     environment:
       - spring.rabbitmq.host=rabbitmq 
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   infra-erueka-server:
     image: wer080/infra-eureka-server:1.0
@@ -85,7 +87,7 @@ services:
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
     networks:
-      - mentoree-network
+      - mentoree-network-net
 
   infra-api-gateway-service:
     image: wer080/infra-api-gateway-service:1.0
@@ -110,12 +112,13 @@ services:
       - spring.cloud.config.uri=http://infra-config-server:8888
       - spring.redis.host=http://mentoree-redis:6379
       - spring.rabbitmq.host=rabbitmq
-      - Kafka.client.url=http://43.200.50.181:9092
+      - Kafka.client.url=http://kafka:9092
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - server.url=http://43.200.50.181:8000
     networks:
-      - mentoree-network
+      - mentoree-network-net
+
 networks:
-  mentoree-network:
-    name: mentoree-network
-    external: true
+  mentoree-network-net:
+    external:
+      name: mentoree-network
