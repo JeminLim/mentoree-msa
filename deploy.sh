@@ -45,8 +45,8 @@ sudo docker build -t ${DOCKER_USER_ID}/infra-eureka-server:${APP_VERSION} .
 echo ">>> Api gateway 이미지 빌드"
 echo ">>> Docker file 위치 - ${API_GATEWAY_SERVICE_DIR}"
 cd ${API_GATEWAY_SERVICE_DIR}
-sudo docker rmi ${DOCKER_USER_ID}/infra-api-gateway-servic:${PREV_VERSION}
-sudo docker build -t ${DOCKER_USER_ID}/infra-api-gateway-servic:${APP_VERSION} .
+sudo docker rmi ${DOCKER_USER_ID}/infra-api-gateway-service:${PREV_VERSION}
+sudo docker build -t ${DOCKER_USER_ID}/infra-api-gateway-service:${APP_VERSION} .
 
 echo ">>> Member service 이미지 빌드"
 echo ">>> Docker file 위치 - ${MEMBER_SERVICE_DIR}"
