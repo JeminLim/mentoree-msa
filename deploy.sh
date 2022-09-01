@@ -31,30 +31,37 @@ fi
 
 echo "> 이미지 파일 빌드 ... "
 echo ">>> Config server 이미지 빌드"
+echo ">>> Docker file 위치 - ${CONFIG_SERVER_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/infra-config-server:${PREV_VERSION}
 sudo docker build -f ${CONFIG_SERVER_DIR}/Dockerfile -t ${DOCKER_USER_ID}/infra-config-server:${APP_VERSION} .
 
 echo ">>> Eureka server 이미지 빌드"
+echo ">>> Docker file 위치 - ${EUREKA_SERVER_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/infra-eureka-server:${PREV_VERSION}
 sudo docker build -f ${EUREKA_SERVER_DIR}/Dockerfile -t ${DOCKER_USER_ID}/infra-eureka-server:${APP_VERSION} .
 
 echo ">>> Api gateway 이미지 빌드"
+echo ">>> Docker file 위치 - ${API_GATEWAY_SERVICE_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/infra-api-gateway-servic:${PREV_VERSION}
 sudo docker build -f ${API_GATEWAY_SERVICE_DIR}/Dockerfile -t ${DOCKER_USER_ID}/infra-api-gateway-servic:${APP_VERSION} .
 
 echo ">>> Member service 이미지 빌드"
+echo ">>> Docker file 위치 - ${MEMBER_SERVICE_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/member-service:${PREV_VERSION}
 sudo docker build -f ${MEMBER_SERVICE_DIR}/Dockerfile -t ${DOCKER_USER_ID}/member-service:${APP_VERSION} .
 
 echo ">>> Member auth service 이미지 빌드"
+echo ">>> Docker file 위치 - ${MEMBER_AUTH_SERVICE_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/member-auth-service:${PREV_VERSION}
 sudo docker build -f ${MEMBER_AUTH_SERVICE_DIR}/Dockerfile -t ${DOCKER_USER_ID}/member-auth-service:${APP_VERSION} .
 
 echo ">>> Mentoring service 이미지 빌드"
+echo ">>> Docker file 위치 - ${MENTORING_SERVICE_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/mentoring-service:${PREV_VERSION}
 sudo docker build -f ${MENTORING_SERVICE_DIR}/Dockerfile -t ${DOCKER_USER_ID}/mentoring-service:${APP_VERSION} .
 
 echo ">>> Reply service 이미지 빌드"
+echo ">>> Docker file 위치 - ${REPLY_SERVICE_DIR}"
 sudo docker rmi ${DOCKER_USER_ID}/reply-service:${PREV_VERSION}
 sudo docker build -f ${REPLY_SERVICE_DIR}/Dockerfile -t ${DOCKER_USER_ID}/reply-service:${APP_VERSION} .
 
