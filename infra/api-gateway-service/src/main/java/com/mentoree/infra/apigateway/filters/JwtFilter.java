@@ -6,7 +6,6 @@ import com.mentoree.common.jwt.exception.ExpiredTokenException;
 import com.mentoree.common.jwt.exception.InvalidTokenException;
 import com.mentoree.common.jwt.util.JwtUtils;
 import com.mentoree.common.jwt.util.TokenMember;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -14,7 +13,6 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -28,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-//@Component
+@Component
 public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
     private final String ACCESS_TOKEN_COOKIE = "access";
@@ -104,7 +102,6 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             ServerHttpRequest addHeaderRequest = addAuthorizationHeader(request, member);
 
             return chain.filter(exchange.mutate().request(addHeaderRequest).build());
-
         }));
     }
 
