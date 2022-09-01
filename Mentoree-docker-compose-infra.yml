@@ -52,7 +52,7 @@ services:
       - mentoree-network-net
 
   mentoree-front:
-    image: wer080/mentoree-front:1.0
+    image: wer080/mentoree-front:2.0
     container_name: mentoree-front
     command: real
     ports:
@@ -62,7 +62,7 @@ services:
       - mentoree-network-net
 
   infra-config-server:
-    image: wer080/infra-config-server:1.0
+    image: wer080/infra-config-server:2.0
     container_name: infra-config-server
     depends_on:
       - rabbitmq
@@ -77,7 +77,7 @@ services:
       - mentoree-network-net
 
   infra-erueka-server:
-    image: wer080/infra-eureka-server:1.0
+    image: wer080/infra-eureka-server:2.0
     container_name: infra-eureka-server
     depends_on:
       - infra-config-server
@@ -90,7 +90,7 @@ services:
       - mentoree-network-net
 
   infra-api-gateway-service:
-    image: wer080/infra-api-gateway-service:1.0
+    image: wer080/infra-api-gateway-service:2.0
     container_name: infra-api-gateway-service
     depends_on:
       - mentoree-front

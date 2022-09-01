@@ -2,7 +2,7 @@ version: "3"
 
 services:
   member-auth-service:
-    image: wer080/member-auth-service:1.0
+    image: wer080/member-auth-service:2.0
     container_name: member-auth-service
     depends_on:
       - infra-config-server
@@ -29,7 +29,7 @@ services:
       - mentoree-network-net
 
   member-service:
-    image: wer080/member-service:1.0
+    image: wer080/member-service:2.0
     container_name: member-service
     depends_on:
       - infra-config-server
@@ -56,7 +56,7 @@ services:
       - mentoree-network-net
 
   mentoring-service:
-    image: wer080/mentoring-service:1.0
+    image: wer080/mentoring-service:2.0
     container_name: mentoring-service
     depends_on:
       - infra-config-server
@@ -83,7 +83,7 @@ services:
       - mentoree-network-net
 
   reply-service:
-    image: wer080/reply-service:1.0
+    image: wer080/reply-service:2.0
     container_name: reply-service
     depends_on:
       - infra-config-server
