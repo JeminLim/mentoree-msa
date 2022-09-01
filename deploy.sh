@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DOCKER_USER_ID=wer080
-APP_VERSION=1.0
+APP_VERSION=2.0
 
 BASE_DIR=/home/ec2-user/app/mentoree-webservice/zip
 
