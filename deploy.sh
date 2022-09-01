@@ -31,30 +31,37 @@ fi
 echo "> 이미지 파일 빌드 ... "
 echo ">>> Config server 이미지 빌드"
 cd CONFIG_SERVER_DIR
+docker rmi $DOCKER_USER_ID/infra-config-server:$APP_VERSION
 docker build -t $DOCKER_USER_ID/infra-config-server:$APP_VERSION
 
 echo ">>> Eureka server 이미지 빌드"
 cd EUREKA_SERVER_DIR
+docker rmi $DOCKER_USER_ID/infra-eureka-server:$APP_VERSION
 docker build -t $DOCKER_USER_ID/infra-eureka-server:$APP_VERSION
 
 echo ">>> Api gateway 이미지 빌드"
 cd API_GATEWAY_SERVICE_DIR
+docker rmi $DOCKER_USER_ID/infra-api-gateway-servic:$APP_VERSION
 docker build -t $DOCKER_USER_ID/infra-api-gateway-servic:$APP_VERSION
 
 echo ">>> Member service 이미지 빌드"
 cd MEMBER_SERVICE_DIR
+docker rmi $DOCKER_USER_ID/member-service:$APP_VERSION
 docker build -t $DOCKER_USER_ID/member-service:$APP_VERSION
 
 echo ">>> Member auth service 이미지 빌드"
 cd MEMBER_AUTH_SERVICE_DIR
+docker rmi $DOCKER_USER_ID/member-auth-service:$APP_VERSION
 docker build -t $DOCKER_USER_ID/member-auth-service:$APP_VERSION
 
 echo ">>> Mentoring service 이미지 빌드"
 cd MENTORING_SERVICE_DIR
+docker rmi $DOCKER_USER_ID/mentoring-service:$APP_VERSION
 docker build -t $DOCKER_USER_ID/mentoring-service:$APP_VERSION
 
 echo ">>> Reply service 이미지 빌드"
 cd REPLY_SERVICE_DIR
+docker rmi $DOCKER_USER_ID/reply-service:$APP_VERSION
 docker build -t $DOCKER_USER_ID/reply-service:$APP_VERSION
 
 echo "> Docker-compose 구동"
