@@ -64,8 +64,8 @@ echo ">>> Docker file 위치 - ${REPLY_SERVICE_DIR}"
 cd ${REPLY_SERVICE_DIR}
 sudo docker build -t ${DOCKER_USER_ID}/reply-service:${APP_VERSION} .
 
-#echo "> Docker-compose 구동"
-#cd ${BASE_DIR}
-#docker-compose -f Mentoree-docker-compose-infra.yml up -d
-#sleep 90
-#docker-compose -f Mentoree-docker-compose-service.yml up -d
+echo "> Docker-compose 구동"
+cd ${BASE_DIR}
+docker-compose -f Mentoree-docker-compose-infra.yml up -d
+sleep 90
+docker-compose -f Mentoree-docker-compose-service.yml up -d

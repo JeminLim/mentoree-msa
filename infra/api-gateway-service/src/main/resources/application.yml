@@ -53,12 +53,12 @@ spring:
       default-filters:
         - name: LoggingFilter
         - name: JwtFilter
-            args:
-              role: ROLE_USER
-              excludeUrl:
-                - /mentoring-service/api/programs/list/**
-                - /mentoring-service/api/programs/{programId:\\d+}
-                - /member-auth-service/auth/**
+          args:
+            role: ROLE_USER
+            excludeUrl:
+              - /mentoring-service/api/programs/list/**
+              - /mentoring-service/api/programs/{programId:\\d+}
+              - /member-auth-service/auth/**
 
 eureka:
   client:
