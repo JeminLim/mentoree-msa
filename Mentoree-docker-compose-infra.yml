@@ -7,7 +7,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      mentoree-network-net:
+      mentoree-network:
         ipv4_address: 172.18.0.100
   kafka:
     image: wurstmeister/kafka
@@ -23,7 +23,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      mentoree-network-net:
+      mentoree-network:
         ipv4_address: 172.18.0.101
 
   rabbitmq:
@@ -40,7 +40,7 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     networks:
-      - mentoree-network-net
+      - mentoree-network
 
   mentoree-redis:
     image: redis
@@ -49,17 +49,17 @@ services:
       - "6379:6379"
     restart: always
     networks:
-      - mentoree-network-net
+      - mentoree-network
 
   mentoree-front:
-    image: wer080/mentoree-front:2.0
+    image: wer080/mentoree-front:1.0
     container_name: mentoree-front
     command: real
     ports:
       - "8081:8081"
     restart: always
     networks:
-      - mentoree-network-net
+      - mentoree-network
 
   infra-config-server:
     image: wer080/infra-config-server:2.0
@@ -74,7 +74,7 @@ services:
     environment:
       - spring.rabbitmq.host=rabbitmq 
     networks:
-      - mentoree-network-net
+      - mentoree-network
 
   infra-erueka-server:
     image: wer080/infra-eureka-server:2.0
@@ -87,7 +87,7 @@ services:
     environment:
       - spring.cloud.config.uri=http://infra-config-server:8888
     networks:
-      - mentoree-network-net
+      - mentoree-network
 
   infra-api-gateway-service:
     image: wer080/infra-api-gateway-service:2.0
@@ -116,9 +116,10 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - server.url=http://43.200.50.181:8000
     networks:
-      - mentoree-network-net
+      - mentoree-network
 
 networks:
-  mentoree-network-net:
-    external:
-      name: mentoree-network
+  mentoree-network:
+    driver: bridge
+    external: true
+    internal: true

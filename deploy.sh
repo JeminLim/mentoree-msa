@@ -29,7 +29,10 @@ else
   sleep 5
 fi
 
-echo "> 이미지 파일 빌드 ... "
+echo "> 이미지 정리 ... "
+sudo docker rmi $(docker images -f "dangling=true" -qa)
+
+echo "> 이미지 Build ..."
 echo ">>> Config server 이미지 빌드"
 echo ">>> Docker file 위치 - ${CONFIG_SERVER_DIR}"
 cd ${CONFIG_SERVER_DIR}
