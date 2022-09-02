@@ -28,16 +28,16 @@ script:
 - echo "> build reply-service"
 - "./gradlew :reply-app-api:build"
 after_success:
-- mv application.yml /infra/config-server/src/main/resources
-- mv apiEncryptionKey.jks /infra/config-server
+- mv application.yml ./infra/config-server/src/main/resources
+- mv apiEncryptionKey.jks ./infra/config-server
 before_deploy:
 - zip -r mentoree-webservice *
 - mkdir -p deploy
 - mv mentoree-webservice.zip deploy/mentoree-webservice.zip
 deploy:
 - provider: s3
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
   bucket: mentoree-build
   region: ap-northeast-2
   skip_cleanup: true
@@ -47,8 +47,8 @@ deploy:
   on:
     all_branches: true
 - provider: codedeploy
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
   bucket: mentoree-build
   key: mentoree-webservice.zip
   bundle_type: zip
