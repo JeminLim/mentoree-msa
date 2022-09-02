@@ -12,6 +12,9 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_2225e3c30702_key -iv $encrypted_2225e3c30702_iv -in config-info.tar.enc -out config-info.tar -d
 - chmod +x gradlew
 - tar xvf config-info.tar
+- mv application.yml ./infra/config-server/src/main/resources
+- mv bootstrap.yml ./infra/config-server/src/main/resources
+- mv apiEncryptionKey.jks ./infra/config-server
 script:
 - echo "> build api-gateway-service"
 - "./gradlew :infra-api-gateway-service:build"
@@ -27,10 +30,6 @@ script:
 - "./gradlew :mentoring-app-api:build"
 - echo "> build reply-service"
 - "./gradlew :reply-app-api:build"
-after_success:
-- mv application.yml ./infra/config-server/src/main/resources
-- mv bootstrap.yml ./infra/config-server/src/main/resources
-- mv apiEncryptionKey.jks ./infra/config-server
 before_deploy:
 - zip -r mentoree-webservice *
 - mkdir -p deploy
