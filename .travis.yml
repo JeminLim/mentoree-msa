@@ -29,6 +29,7 @@ script:
 - "./gradlew :reply-app-api:build"
 after_success:
 - mv application.yml ./infra/config-server/src/main/resources
+- mv bootstrap.yml ./infra/config-server/src/main/resources
 - mv apiEncryptionKey.jks ./infra/config-server
 before_deploy:
 - zip -r mentoree-webservice *

@@ -7,6 +7,7 @@ build/
 
 ## Exclude ##
 /infra/config-server/src/main/resources/application.yml
+/infra/config-server/src/main/resources/bootstrap.yml
 /infra/config-server/apiEncryptionKey.jks
 config-info.tar
 
