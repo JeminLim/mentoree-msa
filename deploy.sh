@@ -64,10 +64,6 @@ echo ">>> Docker file 위치 - ${REPLY_SERVICE_DIR}"
 cd ${REPLY_SERVICE_DIR}
 sudo docker build -t ${DOCKER_USER_ID}/reply-service:${APP_VERSION} .
 
-echo "> 이미지 정리 ... "
-sudo docker rmi $(docker images -f "dangling=true" -qa)
-
-
 #echo "> Docker-compose 구동"
 #cd ${BASE_DIR}
 #docker-compose -f Mentoree-docker-compose-infra.yml up -d
