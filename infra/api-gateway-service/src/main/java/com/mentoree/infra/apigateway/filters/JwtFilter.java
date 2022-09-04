@@ -18,6 +18,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -45,22 +46,24 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     public GatewayFilter apply(Config config) {
         return new OrderedGatewayFilter(((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-
             log.info("request path = {}", request.getURI().getPath());
             AntPathMatcher antPathMatcher = new AntPathMatcher();
             log.info("num of exclude url = {}", config.getExcludeUrl().length);
 
-            for (String whiteList : config.getExcludeUrl()) {
-                log.info("white list - {}", whiteList);
-                if(antPathMatcher.match(whiteList, request.getURI().getPath())) {
-                    log.info("jwt authentication filter not applied");
-                    return chain.filter(exchange);
+            MultiValueMap<String, HttpCookie> cookies = request.getCookies();
+            if(cookies.isEmpty()) { // 비 로그인 상태
+                for (String whiteList : config.getExcludeUrl()) {
+                    log.info("white list - {}", whiteList);
+                    if (antPathMatcher.match(whiteList, request.getURI().getPath())) {
+                        log.info("jwt authentication filter not applied");
+                        return chain.filter(exchange);
+                    }
                 }
             }
 
+            // 로그인 상태 ...
             log.info("jwt authentication filter apply ...");
-
-            List<HttpCookie> cookie = request.getCookies().get(ACCESS_TOKEN_COOKIE);
+            List<HttpCookie> cookie = cookies.get(ACCESS_TOKEN_COOKIE);
             if(cookie.isEmpty()) {
                 return onError(exchange.getResponse(), "U001", "No access token", HttpStatus.BAD_REQUEST);
             }

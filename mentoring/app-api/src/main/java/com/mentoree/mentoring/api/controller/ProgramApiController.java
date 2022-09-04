@@ -89,10 +89,16 @@ public class ProgramApiController {
 
         log.info("Request endpoint : GET /api/programs/{" + programId + "}");
 
-        long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
+        String authHeader = request.getHeader("X-Authorization-Id");
+        Long memberId = authHeader != null ? Long.parseLong(authHeader) : null;
+        Boolean isHost = memberId != null ? programService.isHost(programId, memberId) : false;
+
+        log.info("memberId - {}", memberId);
+        log.info("is Host ? {}", isHost);
+
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("programInfo", programService.getProgramInfo(programId));
-        responseBody.put("isHost", programService.isHost(programId, memberId));
+        responseBody.put("isHost", isHost);
         return ResponseEntity.ok().body(responseBody);
     }
 
