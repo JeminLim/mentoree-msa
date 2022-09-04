@@ -10,6 +10,8 @@ build/
 /infra/config-server/src/main/resources/bootstrap.yml
 /infra/config-server/apiEncryptionKey.jks
 config-info.tar
+Mentoree-docker-compose-infra-local.yml
+Mentoree-docker-compose-service-local.yml
 
 ##oauth##
 !**/src/main/resources/application-oauth.yml

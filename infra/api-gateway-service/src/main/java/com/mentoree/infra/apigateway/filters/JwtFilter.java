@@ -9,6 +9,7 @@ import com.mentoree.common.jwt.util.TokenMember;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpCookie;
@@ -42,25 +43,19 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
     @Override
     public GatewayFilter apply(Config config) {
-        return (((exchange, chain) -> {
+        return new OrderedGatewayFilter(((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
             log.info("request path = {}", request.getURI().getPath());
             AntPathMatcher antPathMatcher = new AntPathMatcher();
             log.info("num of exclude url = {}", config.getExcludeUrl().length);
 
-            boolean shouldLoginCheck = true;
             for (String whiteList : config.getExcludeUrl()) {
                 log.info("white list - {}", whiteList);
                 if(antPathMatcher.match(whiteList, request.getURI().getPath())) {
-                    shouldLoginCheck = false;
-                    break;
+                    log.info("jwt authentication filter not applied");
+                    return chain.filter(exchange);
                 }
-            }
-
-            if(!shouldLoginCheck) {
-                log.info("jwt filter no need to apply");
-                return chain.filter(exchange);
             }
 
             log.info("jwt authentication filter apply ...");
@@ -102,7 +97,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             ServerHttpRequest addHeaderRequest = addAuthorizationHeader(request, member);
 
             return chain.filter(exchange.mutate().request(addHeaderRequest).build());
-        }));
+        }), 1);
     }
 
     private ServerHttpRequest addAuthorizationHeader(ServerHttpRequest request, TokenMember member) {

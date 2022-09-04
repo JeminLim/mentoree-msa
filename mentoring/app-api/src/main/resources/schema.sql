@@ -12,7 +12,10 @@ CREATE TABLE IF NOT EXISTS program (
   is_open bit NOT NULL,
   max_member integer,
   title varchar(255),
-  PRIMARY KEY (program_id));
+  PRIMARY KEY (program_id)
+) engine=InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS participant (
       participant_id bigint NOT NULL AUTO_INCREMENT,
@@ -25,7 +28,11 @@ CREATE TABLE IF NOT EXISTS participant (
       nickname varchar(255),
       role varchar(255),
       program_id bigint,
-      PRIMARY KEY (participant_id));
+      PRIMARY KEY (participant_id),
+      FOREIGN KEY (program_id) REFERENCES program (program_id)
+) engine=InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS mission (
       mission_id bigint NOT NULL AUTO_INCREMENT,
@@ -36,7 +43,11 @@ CREATE TABLE IF NOT EXISTS mission (
       goal varchar(255),
       title varchar(255),
       program_id bigint,
-      PRIMARY KEY (mission_id));
+      PRIMARY KEY (mission_id),
+      FOREIGN KEY (program_id) REFERENCES program (program_id)
+) engine=InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS board (
       board_id bigint NOT NULL AUTO_INCREMENT,
@@ -46,9 +57,9 @@ CREATE TABLE IF NOT EXISTS board (
       member_id bigint,
       nickname varchar(255),
       mission_id bigint,
-      PRIMARY KEY (board_id));
-
-ALTER TABLE participant ADD CONSTRAINT FK_participant_program FOREIGN KEY (program_id) REFERENCES program (program_id);
-ALTER TABLE mission ADD CONSTRAINT FK_mission_program FOREIGN KEY (program_id) REFERENCES program (program_id);
-ALTER TABLE board ADD CONSTRAINT FK_board_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id);
+      PRIMARY KEY (board_id),
+      FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
+)engine=InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 

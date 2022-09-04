@@ -1,8 +1,37 @@
 version: "3"
 
 services:
+  infra-api-gateway-service:
+    image: wer080/infra-api-gateway-service:1.0
+    container_name: infra-api-gateway-service
+    depends_on:
+      - mentoree-front
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - rabbitmq
+    links:
+      - mentoree-front
+      - infra-config-server
+      - infra-eureka-server
+      - mentoree-redis
+      - rabbitmq
+    ports:
+      - "8000:8000"
+    restart: always
+    environment:
+      - front.url=http://mentoree-front:8081
+      - spring.cloud.config.uri=http://infra-config-server:8888
+      - spring.redis.host=http://mentoree-redis:6379
+      - spring.rabbitmq.host=rabbitmq
+      - Kafka.client.url=http://kafka:9092
+      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
+      - server.url=http://43.200.50.181:8000
+    networks:
+      - mentoree-network
+
   member-auth-service:
-    image: wer080/member-auth-service:2.0
+    image: wer080/member-auth-service:1.0
     container_name: member-auth-service
     depends_on:
       - infra-config-server
@@ -29,7 +58,7 @@ services:
       - mentoree-network
 
   member-service:
-    image: wer080/member-service:2.0
+    image: wer080/member-service:1.0
     container_name: member-service
     depends_on:
       - infra-config-server
@@ -56,7 +85,7 @@ services:
       - mentoree-network
 
   mentoring-service:
-    image: wer080/mentoring-service:2.0
+    image: wer080/mentoring-service:1.0
     container_name: mentoring-service
     depends_on:
       - infra-config-server
@@ -83,7 +112,7 @@ services:
       - mentoree-network
 
   reply-service:
-    image: wer080/reply-service:2.0
+    image: wer080/reply-service:1.0
     container_name: reply-service
     depends_on:
       - infra-config-server

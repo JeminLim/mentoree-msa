@@ -46,8 +46,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class OAuthController {
-
-
     /** get config info */
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
@@ -213,8 +211,13 @@ public class OAuthController {
         MultiValueMap<String, String> accessTokenParams = new LinkedMultiValueMap<>();
         String tokenUri = "";
         String redirectUri = "";
+
+        for (String profile : environment.getActiveProfiles()) {
+            log.info("active profile = {}", profile);
+        }
+
         if(provider.equals("google")) {
-            if(Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase("local")))
+            if(Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase("dev")))
                 redirectUri = "http://localhost:8081/login/oauth2/code/google";
             else
                 redirectUri = "http://ec2-43-200-50-181.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/google";

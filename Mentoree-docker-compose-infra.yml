@@ -62,7 +62,7 @@ services:
       - mentoree-network
 
   infra-config-server:
-    image: wer080/infra-config-server:2.0
+    image: wer080/infra-config-server:1.0
     container_name: infra-config-server
     depends_on:
       - rabbitmq
@@ -77,7 +77,7 @@ services:
       - mentoree-network
 
   infra-erueka-server:
-    image: wer080/infra-eureka-server:2.0
+    image: wer080/infra-eureka-server:1.0
     container_name: infra-eureka-server
     depends_on:
       - infra-config-server
@@ -89,34 +89,6 @@ services:
     networks:
       - mentoree-network
 
-  infra-api-gateway-service:
-    image: wer080/infra-api-gateway-service:2.0
-    container_name: infra-api-gateway-service
-    depends_on:
-      - mentoree-front
-      - infra-config-server
-      - infra-eureka-server
-      - mentoree-redis
-      - rabbitmq
-    links:
-      - mentoree-front
-      - infra-config-server
-      - infra-eureka-server
-      - mentoree-redis
-      - rabbitmq
-    ports:
-      - "8000:8000"
-    restart: always
-    environment:
-      - front.url=http://mentoree-front:8081
-      - spring.cloud.config.uri=http://infra-config-server:8888
-      - spring.redis.host=http://mentoree-redis:6379
-      - spring.rabbitmq.host=rabbitmq
-      - Kafka.client.url=http://kafka:9092
-      - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
-      - server.url=http://43.200.50.181:8000
-    networks:
-      - mentoree-network
 
 networks:
   mentoree-network:
