@@ -1,9 +1,11 @@
 package com.mentoree.mentoring.dto;
 
 import com.mentoree.common.domain.Category;
+import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
 import com.mentoree.mentoring.domain.entity.ProgramRole;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
@@ -65,7 +68,7 @@ public class ProgramInfoDto implements Serializable {
                 .description(program.getDescription())
                 .dueDate(program.getDueDate())
                 .mentor(program.getParticipants().stream().filter(participant -> participant.getRole().equals(ProgramRole.MENTOR))
-                        .map(mentor -> new MentorInfoDto(mentor.getId(), mentor.getNickname())).collect(Collectors.toList()))
+                        .map(mentor -> new MentorInfoDto(mentor.getMemberId(), mentor.getNickname())).collect(Collectors.toList()))
                 .build();
     }
 

@@ -78,6 +78,8 @@ public class ProgramCustomRepositoryImpl implements ProgramCustomRepository {
     @Override
     public Optional<ProgramInfoDto> findProgramInfoById(Long programId) {
         Program findProgram = queryFactory.selectFrom(program)
+                .join(program.participants, participant)
+                .fetchJoin()
                 .where(program.id.eq(programId))
                 .fetchOne();
         return Optional.ofNullable(ProgramInfoDto.of(findProgram));

@@ -44,6 +44,9 @@ public class ProgramApiController {
             throw new BindingFailureException(bindingResult, "잘못된 프로그램 생성 요청입니다.");
         }
         ParticipatedProgramDto data = programService.createProgram(createForm);
+
+        log.info("Created Program - id = {}, title = {}", data.getId(), data.getTitle());
+
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("participatedProgram", data);
         return ResponseEntity.ok().body(responseBody);
