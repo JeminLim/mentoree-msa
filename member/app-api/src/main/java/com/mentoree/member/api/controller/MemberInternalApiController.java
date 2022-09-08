@@ -25,7 +25,6 @@ public class MemberInternalApiController {
 
     @GetMapping("/{memberId}")
     public ResponseMember getMemberInfo(@PathVariable("memberId") Long memberId) {
-        log.info("Internal request endpoint : GET /api/members/internal");
         return memberService.getMemberInfo(memberId);
     }
 

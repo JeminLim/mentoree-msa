@@ -34,16 +34,13 @@ public class ProgramService {
 
     @Transactional
     public ParticipatedProgramDto createProgram(ProgramCreateDto createForm) {
-        //프로그램 저장
         Program saveProgram = programRepository.save(createForm.toProgramEntity());
-        //참가자 저장
         participantRepository.save(createForm.toParticipantEntity(saveProgram));
         return ParticipatedProgramDto.builder()
                 .id(saveProgram.getId())
                 .title(saveProgram.getTitle())
                 .build();
     }
-
     @Transactional(readOnly = true)
     public Map<String,Object> getProgramList(Integer page, @Nullable Long memberId) {
         List<Long> participatedProgramList = new ArrayList<>();
@@ -60,7 +57,6 @@ public class ProgramService {
 
     @Transactional(readOnly = true)
     public Slice<ProgramInfoDto> getRecommendProgramList(Integer page, Long memberId, List<String> interests) {
-        log.info("getRecommendProgramList ... " );
         List<Long> participatedProgramList = participantRepository.findProgramIdByMemberId(memberId);
         List<Category> interestList = interests.stream().map(Category::valueOf).collect(Collectors.toList());
         return programRepository.findRecommendProgram(PageRequest.of(page, RECOMMEND_PROGRAM_PAGE_SIZE),

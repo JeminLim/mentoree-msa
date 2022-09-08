@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="DIR" value="C:/Users/wer08/Desktop/Portfolio/mentoree/logs"/>
+    <property name="DIR" value="/mentoree/logs"/>
     <property name="PREFIX" value="mentoree_"/>
 
     <appender name="ErrorDetail" class="ch.qos.logback.core.rolling.RollingFileAppender">

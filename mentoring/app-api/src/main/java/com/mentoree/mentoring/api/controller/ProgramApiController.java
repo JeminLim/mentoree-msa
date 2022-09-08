@@ -37,16 +37,10 @@ public class ProgramApiController {
     @PostMapping("/new")
     public ResponseEntity createProgram(@Validated @RequestBody ProgramCreateDto createForm,
                                         BindingResult bindingResult) {
-
-        log.info("Request endpoint : POST /api/programs/new");
-
         if(bindingResult.hasErrors()) {
             throw new BindingFailureException(bindingResult, "잘못된 프로그램 생성 요청입니다.");
         }
         ParticipatedProgramDto data = programService.createProgram(createForm);
-
-        log.info("Created Program - id = {}, title = {}", data.getId(), data.getTitle());
-
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("participatedProgram", data);
         return ResponseEntity.ok().body(responseBody);
@@ -55,50 +49,32 @@ public class ProgramApiController {
     //== 프로그램 리스트 ==//
     @GetMapping("/list")
     public ResponseEntity getMoreList(HttpServletRequest request, @RequestParam("page") Integer page) {
-
-        log.info("Request endpoint : GET /api/programs/list?page=" + page);
-
         String memberId = request.getHeader("X-Authorization-Id");
-
         Map<String, Object> responseBody = memberId != null ?
                 programService.getProgramList(page, Long.parseLong(memberId)) :
                 programService.getProgramList(page, null);
-
         return ResponseEntity.ok().body(responseBody);
     }
 
     @GetMapping("/recommendations/list")
     public ResponseEntity getMoreRecommendList(HttpServletRequest request, @RequestParam("page") Integer page) {
-
-        log.info("Request endpoint : GET /api/programs/recommendations/list?page=" + page);
-
         Long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
-
         /** 로그인 사용자 정보 Feign client 요청 */
         ResponseMember memberInfo = memberClient.getMemberInfo(memberId);
         Slice<ProgramInfoDto> recommendProgramList
                 = programService.getRecommendProgramList(page, memberId, memberInfo.getInterests());
-
         Map<String, Object> result = new HashMap<>();
         result.put("recommendProgramList", recommendProgramList.getContent());
         result.put("hasNext", recommendProgramList.hasNext());
-
         return ResponseEntity.ok().body(result);
     }
 
     //== 프로그램 상세 정보 ==//
     @GetMapping("/{programId}")
     public ResponseEntity programInfoGet(HttpServletRequest request, @PathVariable("programId") long programId) {
-
-        log.info("Request endpoint : GET /api/programs/{" + programId + "}");
-
         String authHeader = request.getHeader("X-Authorization-Id");
         Long memberId = authHeader != null ? Long.parseLong(authHeader) : null;
         Boolean isHost = memberId != null ? programService.isHost(programId, memberId) : false;
-
-        log.info("memberId - {}", memberId);
-        log.info("is Host ? {}", isHost);
-
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("programInfo", programService.getProgramInfo(programId));
         responseBody.put("isHost", isHost);
@@ -111,13 +87,9 @@ public class ProgramApiController {
     public ResponseEntity applyProgram(
             @PathVariable("programId") Long programId,
             @Validated @RequestBody ApplyRequestDto applyRequest, BindingResult bindingResult) {
-
-        log.info("Request endpoint : POST /api/programs/{" + programId + "}/join");
-
         if(bindingResult.hasErrors()) {
             throw new BindingFailureException(bindingResult, "잘못된 참가 신청 요청입니다.");
         }
-
         programService.applyProgram(applyRequest);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("result", "success");
@@ -127,23 +99,17 @@ public class ProgramApiController {
     //== 프로그램 참가자 관리 ==//
     @GetMapping("/{programId}/applicants")
     public ResponseEntity programApplicationListGet(HttpServletRequest request, @PathVariable("programId") Long programId) {
-
-        log.info("Request endpoint : GET /api/programs/{" + programId + "}/applicants");
-
         long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
         if(!isHost(programId, memberId)) {
             throw new NoAuthorityException("권한이 없는 유저 요청 입니다.");
         }
-
         ProgramInfoDto programInfo = programService.getProgramInfo(programId);
         List<ApplyRequestDto> applicants = programService.getApplicants(programId);
         Long curMember = programService.countCurrentMember(programId);
-
         Map<String, Object> result = new HashMap<>();
         result.put("programInfo", programInfo);
         result.put("applicants", applicants);
         result.put("curNum", curMember);
-
         return ResponseEntity.ok().body(result);
     }
 
@@ -152,15 +118,11 @@ public class ProgramApiController {
     public ResponseEntity applicantAccept(HttpServletRequest request,
                                           @RequestBody ApplyRequestDto member,
                                           @PathVariable("programId") Long programId) {
-
-        log.info("Request endpoint : POST /api/programs/{" + programId + "}/applicants/accept");
-
         long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
         if(!isHost(programId, memberId)) {
             throw new NoAuthorityException("권한이 없는 유저 요청 입니다.");
         }
         programService.approval(programId, member.getMemberId());
-
         Map<String, String> result = new HashMap<>();
         result.put("result", "success");
         return ResponseEntity.ok().body(result);
@@ -171,9 +133,6 @@ public class ProgramApiController {
     public ResponseEntity applicantReject(HttpServletRequest request,
                                           @RequestBody ApplyRequestDto member,
                                           @PathVariable("programId") Long programId) {
-
-        log.info("Request endpoint : POST /api/programs/{" + programId + "}/applicants/reject");
-
         long memberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
         if(!isHost(programId, memberId)) {
             throw new NoAuthorityException("권한이 없는 유저 요청 입니다.");

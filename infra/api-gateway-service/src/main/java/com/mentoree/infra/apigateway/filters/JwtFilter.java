@@ -6,6 +6,8 @@ import com.mentoree.common.jwt.exception.ExpiredTokenException;
 import com.mentoree.common.jwt.exception.InvalidTokenException;
 import com.mentoree.common.jwt.util.JwtUtils;
 import com.mentoree.common.jwt.util.TokenMember;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -46,37 +48,31 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     public GatewayFilter apply(Config config) {
         return new OrderedGatewayFilter(((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-            log.info("request path = {}", request.getURI().getPath());
             AntPathMatcher antPathMatcher = new AntPathMatcher();
-            log.info("num of exclude url = {}", config.getExcludeUrl().length);
-
             MultiValueMap<String, HttpCookie> cookies = request.getCookies();
-            if(cookies.isEmpty()) { // 비 로그인 상태
+
+            // 비 로그인 상태
+            if(cookies.isEmpty()) {
                 for (String whiteList : config.getExcludeUrl()) {
-                    log.info("white list - {}", whiteList);
-                    if (antPathMatcher.match(whiteList, request.getURI().getPath())) {
-                        log.info("jwt authentication filter not applied");
+                    if (antPathMatcher.match(whiteList, request.getURI().getPath()))
                         return chain.filter(exchange);
-                    }
                 }
             }
 
             // 로그인 상태 ...
-            log.info("jwt authentication filter apply ...");
             List<HttpCookie> cookie = cookies.get(ACCESS_TOKEN_COOKIE);
             if(cookie.isEmpty()) {
                 return onError(exchange.getResponse(), "U001", "No access token", HttpStatus.BAD_REQUEST);
             }
 
             String accessToken = cookie.get(0).getValue();
-
             /** blacklist 확인 */
             WebClient.create().get().uri(URL + "/member-auth-service/auth/blacklist/check?token=" + accessToken)
-                    .retrieve().bodyToMono(Boolean.class).flatMap( response -> {
-                        log.info("response value = {}", response);
-                        if(!response)
-                            return onError(exchange.getResponse(), "U002", "invalid token", HttpStatus.BAD_REQUEST);
-                        return Mono.just(true);
+                .retrieve().bodyToMono(Boolean.class).flatMap( response -> {
+                    log.info("response value = {}", response);
+                    if(!response)
+                        return onError(exchange.getResponse(), "U002", "invalid token", HttpStatus.BAD_REQUEST);
+                    return Mono.just(true);
             });
 
             try {
@@ -88,17 +84,11 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             }
 
             TokenMember member = jwtUtils.decode(accessToken);
-            log.info("token info - id {" + member.getId() + "}");
-            log.info("token info - email {" + member.getEmail() + "}");
-            log.info("token info - role {" + member.getRole() + "}");
-
-
             if(!hasRole(member, config.getRole())) {
                 return onError(exchange.getResponse(), "U003", "no authority to access", HttpStatus.UNAUTHORIZED);
             }
 
             ServerHttpRequest addHeaderRequest = addAuthorizationHeader(request, member);
-
             return chain.filter(exchange.mutate().request(addHeaderRequest).build());
         }), 1);
     }
@@ -132,24 +122,10 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
         return role.equals(member.getRole());
     }
 
+    @Getter
+    @Setter
     public static class Config {
         private String role;
         private String[] excludeUrl;
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
-
-        public String[] getExcludeUrl() {
-            return excludeUrl;
-        }
-
-        public void setExcludeUrl(String... url) {
-            this.excludeUrl = url;
-        }
     }
 }

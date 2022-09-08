@@ -21,7 +21,6 @@ public class ProgramInternalApiController {
 
     @GetMapping("/{memberId}")
     public List<ParticipatedProgram> getParticipatedPrograms(@PathVariable("memberId") Long memberId) {
-        log.info("Internal request endpoint : GET /api/programs/internal/{memberId}");
         return programService.getParticipatedPrograms(memberId);
     }
 

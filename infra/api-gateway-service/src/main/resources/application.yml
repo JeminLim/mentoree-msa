@@ -22,13 +22,6 @@ spring:
             - Method=GET, POST
           filters:
             - RewritePath=/member-service/(?<segment>.*), /$\{segment}
-#        - id: mentoring-service
-#          uri: lb://MENTORING-SERVICE/
-#          predicates:
-#            - Path=/mentoring-service/api/programs/list,/mentoring-service/api/programs/{programId}
-#            - Method=GET
-#          filters:
-#            - RewritePath=/mentoring-service/(?<segment>.*), /$\{segment}
         - id: mentoring-service
           uri: lb://MENTORING-SERVICE/
           predicates:

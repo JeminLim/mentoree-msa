@@ -25,7 +25,6 @@ services:
     networks:
       mentoree-network:
         ipv4_address: 172.18.0.101
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -41,7 +40,6 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
     networks:
       - mentoree-network
-
   mentoree-redis:
     image: redis
     container_name: mentoree-redis
@@ -50,17 +48,16 @@ services:
     restart: always
     networks:
       - mentoree-network
-
   mentoree-front:
     image: wer080/mentoree-front:1.0
     container_name: mentoree-front
     command: real
     ports:
-      - "8081:8081"
+      - "80:80"
+      - "443:443"
     restart: always
     networks:
       - mentoree-network
-
   infra-config-server:
     image: wer080/infra-config-server:1.0
     container_name: infra-config-server
@@ -75,7 +72,6 @@ services:
       - spring.rabbitmq.host=rabbitmq 
     networks:
       - mentoree-network
-
   infra-erueka-server:
     image: wer080/infra-eureka-server:1.0
     container_name: infra-eureka-server
@@ -88,8 +84,6 @@ services:
       - spring.cloud.config.uri=http://infra-config-server:8888
     networks:
       - mentoree-network
-
-
 networks:
   mentoree-network:
     driver: bridge

@@ -35,17 +35,14 @@ public class MemberService {
     public MemberInfo getMemberProfile(Long id) {
         Member findMember = memberRepository.findMemberById(id)
                 .orElseThrow(() -> new NoSuchElementException("유저를 못찾았슴다"));
-
         return MemberInfo.of(findMember);
     }
 
     @Transactional(readOnly = true)
     public ResponseMember getMemberInfo(Long memberId) {
         Optional<Member> member = memberRepository.findMemberById(memberId);
-
         if(member.isEmpty())
             throw new NoSuchElementException("회원이 존재하지 않습니다.");
-
         Member targetMember = member.get();
         List<String> interest = targetMember.getInterest().stream().map(i -> i.getCategory().getValue()).collect(Collectors.toList());
 
@@ -56,7 +53,6 @@ public class MemberService {
     public MemberInfo updateMemberProfile(MemberInfo memberInfo) {
         Member member = memberRepository.findMemberByEmail(memberInfo.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("유저 없음"));
-
         /** Kafka 닉네임 업데이트시 메시지 전송 */
         if(!member.getNickname().equals(memberInfo.getNickname())) {
             kafkaProducer.send("member-profile-update-topic",
@@ -65,7 +61,6 @@ public class MemberService {
         }
 
         member.updateLink(memberInfo.getLink());
-
         /**
          * A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance 오류
          */

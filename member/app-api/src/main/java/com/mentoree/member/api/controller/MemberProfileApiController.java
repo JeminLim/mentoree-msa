@@ -26,9 +26,6 @@ public class MemberProfileApiController {
 
     @GetMapping("/profile")
     public ResponseEntity getMemberProfile(@RequestParam("memberId") Long memberId) {
-
-        log.info("Request endpoint : GET /api/members/profile?memberId=" + memberId);
-
         MemberInfo memberInfo = memberService.getMemberProfile(memberId);
         return ResponseEntity.ok().body(memberInfo);
     }
@@ -37,28 +34,15 @@ public class MemberProfileApiController {
     public ResponseEntity updateMemberProfile(HttpServletRequest request,
                                               @Validated @RequestBody MemberInfo updatedInfo,
                                               BindingResult bindingResult) {
-
-        log.info("Request endpoint : POST /api/members/profile");
-
         // Request 검증
         if(bindingResult.hasErrors()) {
             throw new BindingFailureException(bindingResult);
         }
-
         // 사용자 검증
         Long loginMemberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
-
-        log.info("Login member Id = {}", loginMemberId);
-        log.info("UpdateForm id = {}", updatedInfo.getMemberId());
-
         if(loginMemberId != updatedInfo.getMemberId()) {
             throw new NoAuthorityException("해당 회원에게 권한이 없는 요청입니다.");
         }
-
-        log.info("Update Form - interest[0] = {}", updatedInfo.getInterests().get(0));
-        log.info("Update Form - interest[1] = {}", updatedInfo.getInterests().get(1));
-        log.info("Update Form - interest[2] = {}", updatedInfo.getInterests().get(2));
-
         MemberInfo updated = memberService.updateMemberProfile(updatedInfo);
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");

@@ -27,9 +27,10 @@ services:
       - Kafka.client.url=http://kafka:9092
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - server.url=http://43.200.50.181:8000
+    volumes:
+      - .:/mentoree
     networks:
       - mentoree-network
-
   member-auth-service:
     image: wer080/member-auth-service:1.0
     container_name: member-auth-service
@@ -54,6 +55,8 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
     restart: always
+    volumes:
+      - .:/mentoree
     networks:
       - mentoree-network
 
@@ -81,6 +84,8 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
     restart: always
+    volumes:
+      - .:/mentoree
     networks:
       - mentoree-network
 
@@ -108,6 +113,8 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
     restart: always
+    volumes:
+      - .:/mentoree
     networks:
       - mentoree-network
 
@@ -135,9 +142,10 @@ services:
       - eureka.client.serviceUrl.defaultZone=http://infra-eureka-server:8761/eureka/
       - PROFILE=real
     restart: always
+    volumes:
+      - .:/mentoree
     networks:
       - mentoree-network
-
 networks:
   mentoree-network:
     driver: bridge

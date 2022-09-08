@@ -78,8 +78,6 @@ public class OAuthController {
 
     @PostMapping("/auth/login")
     public ResponseEntity OAuthLogin(HttpServletResponse response, @RequestParam("code") String code, @RequestParam("provider") String provider) {
-
-        log.info("login process .... ");
         LoginMemberInfo loginMember = login(response, code, provider);
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");
@@ -108,12 +106,9 @@ public class OAuthController {
         MemberOAuth memberOAuth = oauthMember.get();
         memberOAuth.updateToken("", "", 0L);
         memberOAuthRepository.save(memberOAuth);
-
         removeCookie(response);
-
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("result", "success");
-
         return ResponseEntity.ok().body(responseBody);
     }
 
@@ -132,7 +127,6 @@ public class OAuthController {
     }
 
     private LoginMemberInfo getInfoFromGoogle(HttpServletResponse response, String code) throws ParseException, URISyntaxException, IllegalAccessException {
-        log.info("login process with google oauth .... ");
         JSONObject tokenResponse = getTokenFromProvider("google", code);
         String idToken = (String) tokenResponse.get("id_token");
 
@@ -143,19 +137,10 @@ public class OAuthController {
         Long expiresIn = (Long) tokenResponse.get("expires_in");
         String name = decoded.get("familyName").concat(decoded.get("givenName"));
         String email = decoded.get("email");
-
-        log.info("member info - sub : {}", sub);
-        log.info("member info - accessToken : {}", accessToken);
-        log.info("member info - refreshToken : {}", refreshToken);
-        log.info("member info - expiresIn : {}", expiresIn);
-        log.info("member info - name : {}", name);
-        log.info("member info - email : {}", email);
-
         return getLoginMemberInfo(response, accessToken, refreshToken, sub, expiresIn, email, name, "google");
     }
 
     private LoginMemberInfo getInfoFromNaver(HttpServletResponse response, String code) throws ParseException, URISyntaxException, JsonProcessingException {
-        log.info("login process with naver oauth .... ");
         JSONObject tokenResponse = getTokenFromProvider("naver", code);
 
         String accessToken = (String) tokenResponse.get("access_token");
@@ -170,13 +155,6 @@ public class OAuthController {
         String name = profileMap.get("name");
         String id = profileMap.get("id");
 
-        log.info("member info - id : {}", id);
-        log.info("member info - accessToken : {}", accessToken);
-        log.info("member info - refreshToken : {}", refreshToken);
-        log.info("member info - expiresIn : {}", expiresIn);
-        log.info("member info - name : {}", name);
-        log.info("member info - email : {}", email);
-
         return getLoginMemberInfo(response, accessToken, refreshToken, id, expiresIn, email, name, "naver");
     }
 
@@ -186,7 +164,6 @@ public class OAuthController {
 
         Optional<MemberOAuth> findMember = memberOAuthRepository.findMemberOauthByAuthId(oAuth2Id);
         if(findMember.isEmpty()) { // new member login
-            log.info("New login user with {} - {}", provider, email);
             Member save = saveMember(accessToken, refreshToken, oAuth2Id, expiresIn, email, name, provider);
             sendTokenCookie(response, save);
             return createLoginMemberInfo(save, null);
@@ -194,8 +171,6 @@ public class OAuthController {
         else { // existing member login
             MemberOAuth memberOAuth = findMember.get();
             memberOAuth.updateToken(accessToken, refreshToken, expiresIn);
-            log.info("DB login user - {}", memberOAuth.getEmail());
-            // member의 이메일이 유일한 값이 아닐 수 있다. 네이버 망할놈 때문에 email이 다른 oauth 가입 이메일과 중복될 수 있다는 것.
             Member member = memberRepository.findMemberByEmail(email).orElseThrow(NoSuchElementException::new);
             List<ParticipatedProgram> participatedPrograms = participatedProgramClient.getParticipatedPrograms(member.getId());
             sendTokenCookie(response, member);
@@ -212,17 +187,11 @@ public class OAuthController {
         String tokenUri = "";
         String redirectUri = "";
 
-        for (String profile : environment.getActiveProfiles()) {
-            log.info("active profile = {}", profile);
-        }
-
         if(provider.equals("google")) {
             if(Arrays.stream(environment.getActiveProfiles()).anyMatch(env -> env.equalsIgnoreCase("dev")))
                 redirectUri = "http://localhost:8081/login/oauth2/code/google";
             else
-                redirectUri = "http://ec2-43-200-50-181.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/google";
-
-            log.info("redirect url = {}", redirectUri);
+                redirectUri = "https://mentoree.tk/login/oauth2/code/google";
             accessTokenParams = accessTokenParams("authorization_code", code, googleClientId, googleClientSecret,
                     redirectUri, null);
             tokenUri = googleTokenUri;
@@ -320,7 +289,6 @@ public class OAuthController {
                 .identifier(encryptedId)
                 .build();
         tokenService.save(refreshToken);
-
         response.addCookie(generateCookie("access", accessToken, validationTime));
         response.addCookie(generateCookie("refresh", encryptedId, refreshValidTime));
     }

@@ -25,9 +25,6 @@ public class ReplyApiController {
 
     @GetMapping("/list")
     public ResponseEntity getReplies(@RequestParam("boardId") long boardId) {
-
-        log.info("Request endpoint : GET /api/replies/list?boardId=" + boardId);
-
         List<ReplyDto> replies = replyService.getReplies(boardId);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("replyList", replies);
@@ -38,13 +35,9 @@ public class ReplyApiController {
     @PostMapping("/new")
     public ResponseEntity replyWrite(@Validated @RequestBody ReplyDto replyCreateForm,
                                      BindingResult bindingResult) {
-
-        log.info("Request endpoint : POST /api/replies/new");
-
         if(bindingResult.hasErrors()) {
             throw new BindingFailureException(bindingResult, "잘못된 댓글 작성 요청입니다.");
         }
-
         ReplyDto savedReply = replyService.writeReply(replyCreateForm);
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");
