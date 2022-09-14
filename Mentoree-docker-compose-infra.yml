@@ -53,8 +53,7 @@ services:
     container_name: mentoree-front
     command: real
     ports:
-      - "80:80"
-      - "443:443"
+      - "8081:8081"
     restart: always
     networks:
       - mentoree-network

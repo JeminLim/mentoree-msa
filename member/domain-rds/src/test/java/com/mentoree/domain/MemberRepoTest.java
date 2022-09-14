@@ -26,7 +26,7 @@ public class MemberRepoTest {
                 .email("preMember@email.com")
                 .memberName("preMember")
                 .nickname("preMemberNick")
-                .oAuth2Id("google")
+                .authId("google")
                 .role(UserRole.USER)
                 .build();
 
@@ -41,7 +41,7 @@ public class MemberRepoTest {
                 .email("test@email.com")
                 .memberName("tester")
                 .nickname("testNick")
-                .oAuth2Id("google")
+                .authId("google")
                 .role(UserRole.USER)
                 .build();
 
@@ -85,7 +85,7 @@ public class MemberRepoTest {
     public void 멤버_검색_BY_이메일() {
         //given
         //when
-        Optional<Member> findMember = memberRepository.findByEmail(preMember.getEmail());
+        Optional<Member> findMember = memberRepository.findMemberByEmail(preMember.getEmail());
         //then
         assertThat(findMember).isNotEmpty();
         assertThat(findMember.get().getId()).isEqualTo(preMember.getId());

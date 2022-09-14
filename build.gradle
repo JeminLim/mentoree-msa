@@ -17,9 +17,21 @@ buildscript {
     }
 
     if(project.name.contains('app')) {
+        plugins{
+            id "org.asciidoctor.jvm.convert" version "3.3.2"
+        }
         ext {
             snippetsDir = file('build/generated-snippets')
         }
+        asciidoctor {
+            dependsOn test
+            attributes 'snippets': snippetsDir
+            inputs.dir snippetsDir
+        }
+        asciidoctor.doFirst {
+            delete file('src/main/resources/static/docs')
+        }
+
         bootJar {
             enabled = true
             dependsOn asciidoctor
@@ -28,16 +40,11 @@ buildscript {
                 into 'BOOT-INF/classes/static/docs'
             }
         }
+
         jar {
             enabled = true
         }
-        asciidoctor {
-            dependsOn test
-            inputs.dir snippetsDir
-        }
-        asciidoctor.doFirst {
-            delete file('src/main/resources/static/docs')
-        }
+
         task copyDocument(type: Copy) {
             dependsOn asciidoctor
             from file("build/docs/asciidoc")
@@ -49,10 +56,7 @@ buildscript {
         build {
             dependsOn copyDocument
         }
-
     }
-
-
 }
 
 
@@ -81,17 +85,8 @@ subprojects {
         compileOnly lombok
         annotationProcessor lombok
 
-        testImplementation ('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: "com.vaadin.external.google", module:"android-json"
-        }
-        testImplementation 'org.springframework.security:spring-security-test'
-
-        runtimeOnly 'com.h2database:h2'
-    }
-
-    /** app 관련 모듈 */
-    if(project.name.contains('app')) {
-            dependencies {
+        /** app 관련 모듈 */
+        if(project.name.contains('app')) {
             //config server
             implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'
             implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
@@ -101,14 +96,19 @@ subprojects {
             /** spring rest docs */
             testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
         }
-    }
 
-    /** 도메인 모듈 */
-    if(project.name.contains('domain')) {
-        dependencies {
+        /** 도메인 모듈 */
+        if(project.name.contains('domain')) {
             implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
             implementation 'org.springframework.boot:spring-boot-starter-validation'
             runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
         }
+
+        testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: "com.vaadin.external.google", module:"android-json"
+        }
+        testImplementation 'org.springframework.security:spring-security-test'
+
+        runtimeOnly 'com.h2database:h2'
     }
 }

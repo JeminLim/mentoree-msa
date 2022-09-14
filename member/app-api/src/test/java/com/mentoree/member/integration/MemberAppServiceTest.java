@@ -1,8 +1,10 @@
 package com.mentoree.member.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mentoree.member.MemberApiApplication;
 import com.mentoree.member.domain.entity.Member;
 import com.mentoree.member.dto.MemberInfo;
+import com.mentoree.member.integration.DataPreparation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

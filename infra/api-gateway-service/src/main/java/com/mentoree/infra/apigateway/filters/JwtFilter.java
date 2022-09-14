@@ -69,7 +69,6 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             /** blacklist 확인 */
             WebClient.create().get().uri(URL + "/member-auth-service/auth/blacklist/check?token=" + accessToken)
                 .retrieve().bodyToMono(Boolean.class).flatMap( response -> {
-                    log.info("response value = {}", response);
                     if(!response)
                         return onError(exchange.getResponse(), "U002", "invalid token", HttpStatus.BAD_REQUEST);
                     return Mono.just(true);
