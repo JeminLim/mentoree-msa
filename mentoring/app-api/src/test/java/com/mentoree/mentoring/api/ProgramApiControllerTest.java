@@ -123,8 +123,8 @@ public class ProgramApiControllerTest {
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value(createForm.getTitle()));
+                .andExpect(jsonPath("$.participatedProgram.id").value(1))
+                .andExpect(jsonPath("$.participatedProgram.title").value(createForm.getTitle()));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ProgramApiControllerTest {
         when(programService.getRecommendProgramList(any(Integer.class), any(Long.class),any())).thenReturn(expectResponse);
         //when
         ResultActions result = mockMvc.perform(
-                get("/api/programs/list/recommend")
+                get("/api/programs/recommendations/list")
                         .header("X-Authorization-Id", "1")
                         .param("page", "0")
                         .param("memberId", "1")
@@ -170,7 +170,7 @@ public class ProgramApiControllerTest {
         );
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.programRecommendList.size()").value(2))
+                .andExpect(jsonPath("$.recommendProgramList.size()").value(2))
                 .andExpect(jsonPath("$.hasNext").value(false));
     }
 

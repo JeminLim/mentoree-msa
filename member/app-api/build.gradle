@@ -42,4 +42,6 @@ dependencies {
     implementation project(':common-exception')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:2.9.0'
+
 }

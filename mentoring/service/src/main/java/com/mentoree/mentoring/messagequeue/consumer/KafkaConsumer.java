@@ -29,7 +29,6 @@ public class KafkaConsumer {
     public void updateNickname(String kafkaMessage) {
 
         log.info("Kafka message: {}", kafkaMessage);
-
         ObjectMapper objectMapper = new ObjectMapper();
         HashMap<String, Object> valueMap = new HashMap<>();
         try {
@@ -44,7 +43,6 @@ public class KafkaConsumer {
 
         // Integer 로 인식해서 자동 타입캐스팅이 되었다
         Long memberId = Long.parseLong(((Integer)valueMap.get("memberId")).toString());
-
         List<Participant> participantList = participantRepository.findAllParticipantByMemberId(memberId);
         String updatedNickname = (String)valueMap.get("nickname");
         participantList.forEach(p -> p.updateParticipantNickname(updatedNickname));

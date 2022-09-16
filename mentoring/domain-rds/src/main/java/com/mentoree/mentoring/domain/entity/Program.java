@@ -34,7 +34,7 @@ public class Program extends BaseTimeEntity {
     //========================//
 
     @OneToMany(mappedBy = "program", fetch = LAZY)
-    private List<Participant> participants = new ArrayList<>();
+    private final List<Participant> participants = new ArrayList<>();
 
     private int curNum;
     private boolean isOpen;

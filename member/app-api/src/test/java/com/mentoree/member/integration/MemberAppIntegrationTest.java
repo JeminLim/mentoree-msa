@@ -1,10 +1,12 @@
 package com.mentoree.member.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mentoree.member.MemberApiApplication;
 import com.mentoree.member.domain.entity.Member;
+import com.mentoree.member.domain.repository.MemberInterestRepository;
+import com.mentoree.member.domain.repository.MemberRepository;
 import com.mentoree.member.dto.MemberInfo;
-import com.mentoree.member.integration.DataPreparation;
+import com.netflix.discovery.converters.Auto;
+import org.apache.kafka.clients.producer.MockProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,20 +41,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @ExtendWith(RestDocumentationExtension.class)
-public class MemberAppServiceTest {
+public class MemberAppIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
     @Autowired
     MockMvc mockMvc;
-
     @Autowired
     DataPreparation dataPreparation;
 
     Map<String, Object> data = new HashMap<>();
-
     @BeforeEach
     void setUp() {
         data = dataPreparation.getData();
@@ -66,20 +67,21 @@ public class MemberAppServiceTest {
         Member testerA = (Member) data.get("memberA");
         mockMvc.perform(
                         get("/api/members/profile")
-                                .param("email", testerA.getEmail())
+                                .header("X-Authorization-Id", testerA.getId())
+                                .param("memberId", testerA.getId().toString())
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(testerA.getEmail()))
                 .andExpect(jsonPath("$.memberName").value(testerA.getMemberName()))
                 .andExpect(jsonPath("$.nickname").value(testerA.getNickname()))
                 .andExpect(jsonPath("$.interests[0]")
-                        .value(testerA.getInterest().get(0).getCategory().getValue()))
+                        .value(testerA.getInterest().get(0).getCategory().getKey()))
                 .andDo(
                         document("/get/api/members/profile",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestParameters(
-                                       parameterWithName("email").description("user's email which wants to get")
+                                       parameterWithName("memberId").description("Target user id")
                                 ),
                                 responseFields(
                                         fieldWithPath("memberId").description("The user's id"),
@@ -99,6 +101,7 @@ public class MemberAppServiceTest {
     void 프로필_수정_요청() throws Exception {
         Member testerA = (Member) data.get("memberA");
         MemberInfo update = MemberInfo.builder()
+                .memberId(testerA.getId())
                 .memberName(testerA.getMemberName())
                 .email(testerA.getEmail())
                 .nickname("changedNickname")
@@ -109,7 +112,7 @@ public class MemberAppServiceTest {
 
         mockMvc.perform(
                 post("/api/members/profile")
-                        .header("X-Authorization-User", "testA@email.com")
+                        .header("X-Authorization-Id", testerA.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .with(csrf())
@@ -128,7 +131,13 @@ public class MemberAppServiceTest {
                                 fieldWithPath("link").description("Changed self-description with user's career")
                         ),
                         responseFields(
-                                fieldWithPath("result").description("Result of request - success or failed")
+                                fieldWithPath("result").description("Result of request - success or failed"),
+                                fieldWithPath("memberInfo.memberId").description("Updated user id"),
+                                fieldWithPath("memberInfo.email").description("Updated user email"),
+                                fieldWithPath("memberInfo.memberName").description("Updated user member's name"),
+                                fieldWithPath("memberInfo.nickname").description("Updated user nickname"),
+                                fieldWithPath("memberInfo.interests").description("Updated user interests"),
+                                fieldWithPath("memberInfo.link").description("Updated user self-description")
                         )
                 ));
     }

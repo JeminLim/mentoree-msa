@@ -23,4 +23,5 @@ public abstract class BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime modifiedDate;
 
+
 }

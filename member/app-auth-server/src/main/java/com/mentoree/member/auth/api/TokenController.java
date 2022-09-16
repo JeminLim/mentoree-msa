@@ -44,7 +44,7 @@ public class TokenController {
     private final ObjectMapper objectMapper;
     private final MemberRepository memberRepository;
 
-    private EncryptUtils encryptUtils = new AESUtils();
+    private final EncryptUtils encryptUtils = new AESUtils();
 
     private final String ACCESS_COOKIE = "access";
     private final String REFRESH_ID = "refresh";

@@ -9,6 +9,7 @@ import com.mentoree.mentoring.dto.BoardInfoDto;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import com.mentoree.mentoring.service.BoardService;
 import com.mentoree.mentoring.service.MissionService;
+import com.mentoree.mentoring.service.ProgramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/missions")
 public class MissionApiController {
 
-    private final ParticipantRepository participantRepository;
+    private final ProgramService programService;
     private final MissionService missionService;
     private final BoardService boardService;
 
@@ -55,8 +56,7 @@ public class MissionApiController {
                                         BindingResult bindingResult) {
         Long programId = missionDTO.getProgramId();
         long loginMemberId = Long.parseLong(request.getHeader("X-Authorization-Id"));
-        Participant writer = participantRepository.findApplicantByMemberIdAndProgramId(programId, loginMemberId);
-        if(!writer.getRole().equals(ProgramRole.MENTOR)) {
+        if(!programService.isMentor(programId, loginMemberId)) {
             throw new NoAuthorityException("멘토가 아닙니다.");
         }
         if(bindingResult.hasErrors()) {

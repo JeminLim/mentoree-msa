@@ -2,7 +2,7 @@ package com.mentoree.common.advice.exception;
 
 public class DuplicateExistException extends RuntimeException{
 
-    private Class<?> duplicateEntity;
+    private final Class<?> duplicateEntity;
 
     public DuplicateExistException(Class<?> entityClass, String message) {
         super(message);

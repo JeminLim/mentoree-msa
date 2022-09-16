@@ -1,13 +1,21 @@
 package com.mentoree.domain;
 
+import com.mentoree.common.domain.Category;
 import com.mentoree.member.domain.entity.Member;
+import com.mentoree.member.domain.entity.MemberInterest;
+import com.mentoree.member.domain.entity.MemberOAuth;
 import com.mentoree.member.domain.entity.UserRole;
+import com.mentoree.member.domain.repository.MemberInterestRepository;
+import com.mentoree.member.domain.repository.MemberOAuthRepository;
 import com.mentoree.member.domain.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -17,78 +25,95 @@ public class MemberRepoTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    private Member preMember;
-
-    @BeforeEach
-    public void data_set_up() {
-        preMember = Member.builder()
-                .email("preMember@email.com")
-                .memberName("preMember")
-                .nickname("preMemberNick")
-                .authId("google")
-                .role(UserRole.USER)
-                .build();
-
-       memberRepository.save(preMember);
-    }
+    @Autowired
+    private MemberInterestRepository memberInterestRepository;
+    @Autowired
+    private MemberOAuthRepository memberOAuthRepository;
 
     @Test
-    public void 멤버_저장_테스트_성공() {
-
+    @DisplayName("멤버_ID_검색")
+    void 멤버_ID_검색() {
         //given
         Member member = Member.builder()
                 .email("test@email.com")
-                .memberName("tester")
-                .nickname("testNick")
-                .authId("google")
+                .authId("googleOAuth")
                 .role(UserRole.USER)
+                .memberName("testName")
+                .nickname("testNick")
+                .link("link")
                 .build();
 
-        Member savedMember = memberRepository.save(member);
+        Member saved = memberRepository.save(member);
 
         //when
-        Optional<Member> findMember = memberRepository.findById(savedMember.getId());
-
+        Optional<Member> findEntity = memberRepository.findById(saved.getId());
         //then
-        assertThat(findMember).isNotNull();
-        assertThat(findMember.get().getId()).isEqualTo(savedMember.getId());
+        assertThat(findEntity).isNotEmpty();
+        assertThat(findEntity.get().getId()).isEqualTo(saved.getId());
     }
 
     @Test
-    public void 멤버_변경_테스트_성공() {
-
+    @DisplayName("이메일로_회원_검색")
+    void 이메일로_회원_검색() {
         //given
-        Member preMember = memberRepository.findById(this.preMember.getId()).get();
-
+        dataPreparation();
         //when
-        preMember.updateNickname("changedNickname");
-        memberRepository.save(preMember);
-
+        Optional<Member> findResult = memberRepository.findMemberByEmail("test@email.com");
         //then
-        assertThat(preMember.getNickname()).isEqualTo("changedNickname");
+        assertThat(findResult).isNotEmpty();
+        assertThat(findResult.get().getInterest().size()).isGreaterThan(0);
     }
 
     @Test
-    public void 멤버_삭제_테스트_성공() {
-
+    @DisplayName("OAuth_가입정보_확인")
+    void OAuth_가입정보_확인() {
         //given
+        dataPreparation();
         //when
-        memberRepository.delete(preMember);
-
+        Optional<MemberOAuth> findResult = memberOAuthRepository.findMemberOauthByAuthId("uniqueOAuthId");
         //then
-        Optional<Member> afterDelete = memberRepository.findById(preMember.getId());
-        assertThat(afterDelete).isEmpty();
+        assertThat(findResult).isNotEmpty();
+        assertThat(findResult.get().getEmail()).isEqualTo("test@email.com");
     }
 
     @Test
-    public void 멤버_검색_BY_이메일() {
+    @DisplayName("회원_관심분야_리스트_검색")
+    void 회원_관심분야_리스트_검색() {
         //given
+        dataPreparation();
+        Member member = memberRepository.findMemberByEmail("test@email.com").get();
         //when
-        Optional<Member> findMember = memberRepository.findMemberByEmail(preMember.getEmail());
+        List<MemberInterest> findResults = memberInterestRepository.findAllByMemberId(member.getId());
         //then
-        assertThat(findMember).isNotEmpty();
-        assertThat(findMember.get().getId()).isEqualTo(preMember.getId());
+        assertThat(findResults.size()).isGreaterThan(0);
+        assertThat(findResults.get(0).getCategory()).isEqualTo(Category.IT);
+    }
+
+    private void dataPreparation() {
+        Member member = Member.builder()
+                .email("test@email.com")
+                .authId("googleOAuth")
+                .role(UserRole.USER)
+                .memberName("testName")
+                .nickname("testNick")
+                .link("link")
+                .build();
+        memberRepository.save(member);
+        MemberInterest interest = MemberInterest.builder()
+                .member(member)
+                .category(Category.IT)
+                .build();
+        member.addInterest(Arrays.asList(interest));
+        memberInterestRepository.save(interest);
+        MemberOAuth oAuth = MemberOAuth.builder()
+                .authId("uniqueOAuthId")
+                .email("test@email.com")
+                .provider("google")
+                .accessToken("accessToken")
+                .refreshToken("refreshToken")
+                .expiration(123L)
+                .build();
+        memberOAuthRepository.save(oAuth);
     }
 
 }

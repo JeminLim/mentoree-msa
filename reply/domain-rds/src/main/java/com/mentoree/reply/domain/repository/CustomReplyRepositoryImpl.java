@@ -13,7 +13,7 @@ import static com.mentoree.reply.domain.entity.QReply.*;
 
 public class CustomReplyRepositoryImpl implements CustomReplyRepository {
 
-    private JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
     public CustomReplyRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);

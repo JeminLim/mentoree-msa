@@ -21,7 +21,7 @@ import static javax.persistence.FetchType.*;
 public class Member extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -44,7 +44,7 @@ public class Member extends BaseTimeEntity {
     private String link;
 
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MemberInterest> interest = new ArrayList<MemberInterest>();
+    private final List<MemberInterest> interest = new ArrayList<MemberInterest>();
 
     @Builder
     public Member(String memberName, String email, String authId, String nickname,

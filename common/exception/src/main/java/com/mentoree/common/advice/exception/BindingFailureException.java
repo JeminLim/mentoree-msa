@@ -5,7 +5,7 @@ import org.springframework.validation.BindingResult;
 public class BindingFailureException extends RuntimeException{
 
     private String message;
-    private BindingResult bindingResult;
+    private final BindingResult bindingResult;
 
     public BindingFailureException(BindingResult bindingResult) {
         this.bindingResult = bindingResult;

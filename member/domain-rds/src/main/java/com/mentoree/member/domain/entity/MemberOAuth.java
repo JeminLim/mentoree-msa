@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class MemberOAuth extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**

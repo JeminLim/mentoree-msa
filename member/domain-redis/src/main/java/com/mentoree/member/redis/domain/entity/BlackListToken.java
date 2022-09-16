@@ -13,7 +13,7 @@ public class BlackListToken {
     @Id
     private String blockedAccessToken;
 
-    private String authId;
+    private final String authId;
 
     @Builder
     public BlackListToken(String blockedAccessToken, String authId) {

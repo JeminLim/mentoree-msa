@@ -51,4 +51,6 @@ dependencies {
     implementation project(':mentoring-domain-rds')
     implementation project(':common-domain')
     implementation project(':common-exception')
+
+    testImplementation 'org.springframework.kafka:spring-kafka-test:2.9.0'
 }

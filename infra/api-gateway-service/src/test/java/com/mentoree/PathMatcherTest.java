@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.*;
 
 public class PathMatcherTest {
 
-    private String[] excludePath = {
+    private final String[] excludePath = {
             "/mentoring-service/api/programs/list/**",
             "/mentoring-service/api/programs/{programId:\\d+}",
             "/member-auth-service/auth/**"};

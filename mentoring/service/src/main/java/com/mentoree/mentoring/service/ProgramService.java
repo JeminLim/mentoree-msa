@@ -2,6 +2,7 @@ package com.mentoree.mentoring.service;
 
 import com.mentoree.common.domain.Category;
 import com.mentoree.common.interenal.ParticipatedProgram;
+import com.mentoree.mentoring.domain.entity.ProgramRole;
 import com.mentoree.mentoring.dto.ParticipatedProgramDto;
 import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
@@ -115,6 +116,12 @@ public class ProgramService {
     @Transactional(readOnly = true)
     public List<ParticipatedProgram> getParticipatedPrograms(Long memberId) {
         return participantRepository.findAllProgramByMemberId(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean isMentor(Long programId, Long memberId) {
+        Participant writer = participantRepository.findApplicantByMemberIdAndProgramId(programId, memberId);
+        return writer.getRole().equals(ProgramRole.MENTOR);
     }
 
 }

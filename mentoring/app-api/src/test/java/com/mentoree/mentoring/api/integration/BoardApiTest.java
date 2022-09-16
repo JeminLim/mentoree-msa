@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.mentoree.MentoringApiApplication;
 import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.domain.entity.Board;
 import com.mentoree.mentoring.domain.entity.Mission;
@@ -19,12 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,10 +40,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = MentoringApiApplication.class)
 @AutoConfigureWireMock
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
 public class BoardApiTest {
@@ -120,6 +123,7 @@ public class BoardApiTest {
                 .missionId(mission.getId())
                 .missionTitle(mission.getTitle())
                 .writerId(1L)
+                .writerNickname("testerNick")
                 .build();
         String requestBody = objectMapper.writeValueAsString(requestForm);
 
@@ -144,6 +148,7 @@ public class BoardApiTest {
                                         fieldWithPath("missionId").description("Mission goal"),
                                         fieldWithPath("missionTitle").description("Mission title"),
                                         fieldWithPath("writerId").description("Writer member pk"),
+                                        fieldWithPath("writerNickname").description("Writer member nickname"),
                                         fieldWithPath("content").description("Board content")
                                 ), responseFields(
                                         fieldWithPath("result").description("Result of request")

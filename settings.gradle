@@ -22,7 +22,7 @@ def file(dir, name) {
                 "src/test/java/com/mentoree/",
                 "src/test/resources",
             ].forEach(src -> {
-                def srcDir = file(subProjectDir, src);
+                def srcDir = file(subProjectDir, src)
                 if(!srcDir.exists()) {
                     srcDir.mkdirs()
                 }

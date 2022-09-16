@@ -13,7 +13,7 @@ public class RefreshToken {
     @Id
     private String authId;
 
-    private String identifier;
+    private final String identifier;
 
     @Builder
     public RefreshToken(String authId, String identifier) {

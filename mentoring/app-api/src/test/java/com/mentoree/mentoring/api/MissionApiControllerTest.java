@@ -6,6 +6,7 @@ import com.mentoree.mentoring.dto.BoardInfoDto;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import com.mentoree.mentoring.service.BoardService;
 import com.mentoree.mentoring.service.MissionService;
+import com.mentoree.mentoring.service.ProgramService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,8 @@ public class MissionApiControllerTest {
     private MissionService missionService;
     @MockBean
     private BoardService boardService;
+    @MockBean
+    private ProgramService programService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -135,9 +138,11 @@ public class MissionApiControllerTest {
     void 미션_생성_테스트() throws Exception {
         //given
         String requestBody = objectMapper.writeValueAsString(missionA);
+        when(programService.isHost(any(), any())).thenReturn(true);
         //when
         ResultActions result = mockMvc.perform(
                 post("/api/missions/new")
+                        .header("X-Authorization-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .param("programId", String.valueOf(1))

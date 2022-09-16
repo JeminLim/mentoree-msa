@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.mentoree.MentoringApiApplication;
 import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.domain.entity.Board;
 import com.mentoree.mentoring.domain.entity.Mission;
+import com.mentoree.mentoring.domain.entity.Program;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,12 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,10 +44,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = MentoringApiApplication.class)
 @AutoConfigureWireMock
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
 public class MissionApiTest {
@@ -81,11 +85,10 @@ public class MissionApiTest {
     void 미션_리스트_요청() throws Exception {
 
         Mission curMission = (Mission) data.get("missionA");
-
         mockMvc.perform(
                 get("/api/missions/list")
                         .header("X-Authorization-Id", "1")
-                        .param("programId", "1")
+                        .param("programId", curMission.getProgram().getId().toString())
                         .param("isOpen", "true")
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.missions.size()").value(1))
@@ -103,6 +106,7 @@ public class MissionApiTest {
                                         parameterWithName("isOpen").description("Whether mission is able to conduct then true, otherwise false")
                                 ), responseFields(
                                         fieldWithPath("missions[]").description("Mission list"),
+                                        fieldWithPath("missions[].programId").description("Program id that mission is belonged to"),
                                         fieldWithPath("missions[].missionId").description("Mission pk"),
                                         fieldWithPath("missions[].missionTitle").description("Mission title"),
                                         fieldWithPath("missions[].missionGoal").description("Mission goal"),
@@ -141,6 +145,7 @@ public class MissionApiTest {
                                         parameterWithName("missionId").description("Mission pk want to get")
                                 ), responseFields(
                                         fieldWithPath("mission").description("Mission list"),
+                                        fieldWithPath("mission.programId").description("Program id that mission is belonged to"),
                                         fieldWithPath("mission.missionId").description("Mission pk"),
                                         fieldWithPath("mission.missionTitle").description("Mission title"),
                                         fieldWithPath("mission.missionGoal").description("Mission goal"),
@@ -163,7 +168,9 @@ public class MissionApiTest {
     @DisplayName("미션_생성_요청")
     void 미션_생성_요청() throws Exception {
 
+        Program program = (Program) data.get("programA");
         MissionInfoDto createRequestForm = MissionInfoDto.builder()
+                .programId(program.getId())
                 .missionTitle("newMission")
                 .missionGoal("new mission goal")
                 .content("new mission")
@@ -174,7 +181,7 @@ public class MissionApiTest {
         mockMvc.perform(
                     RestDocumentationRequestBuilders.post("/api/missions/new")
                             .header("X-Authorization-Id", "1")
-                            .param("programId", "1")
+                            .param("programId", program.getId().toString())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                             .with(csrf())
@@ -189,6 +196,7 @@ public class MissionApiTest {
                                         parameterWithName("_csrf").ignored()
                                 ), requestFields(
                                         fieldWithPath("missionId").ignored(),
+                                        fieldWithPath("programId").description("Program id that mission is belonged to"),
                                         fieldWithPath("missionTitle").description("Mission title"),
                                         fieldWithPath("missionGoal").description("Mission goal"),
                                         fieldWithPath("content").description("Mission content"),

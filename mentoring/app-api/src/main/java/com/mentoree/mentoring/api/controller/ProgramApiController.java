@@ -74,7 +74,7 @@ public class ProgramApiController {
     public ResponseEntity programInfoGet(HttpServletRequest request, @PathVariable("programId") long programId) {
         String authHeader = request.getHeader("X-Authorization-Id");
         Long memberId = authHeader != null ? Long.parseLong(authHeader) : null;
-        Boolean isHost = memberId != null ? programService.isHost(programId, memberId) : false;
+        Boolean isHost = memberId != null && programService.isHost(programId, memberId);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("programInfo", programService.getProgramInfo(programId));
         responseBody.put("isHost", isHost);

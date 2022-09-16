@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  sql:
+    init:
+      mode: never
+
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: consumerGroupId
+Kafka:
+  client:
+    url: localhost:9092
+
+  test:
+    topic: member-profile-update-topic
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug

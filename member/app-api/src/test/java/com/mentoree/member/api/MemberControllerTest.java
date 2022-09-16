@@ -3,6 +3,7 @@ package com.mentoree.member.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoree.member.domain.entity.Member;
 import com.mentoree.member.domain.entity.UserRole;
+import com.mentoree.member.domain.repository.MemberRepository;
 import com.mentoree.member.dto.MemberInfo;
 import com.mentoree.member.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("dev")
+@MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest
 public class MemberControllerTest {
 
@@ -41,10 +46,8 @@ public class MemberControllerTest {
     MockMvc mockMvc;
 
     Member testMember;
-
     @BeforeEach
     public void setUp() {
-
         testMember = Member.builder()
                 .memberName("tester")
                 .email("test@email.com")
@@ -63,6 +66,7 @@ public class MemberControllerTest {
     void getMemberProfileTest() throws Exception {
         //given
         MemberInfo memberInfo = MemberInfo.builder()
+                .memberId(1L)
                 .email("test@email.com")
                 .memberName("tester")
                 .nickname("testNick")
@@ -72,7 +76,7 @@ public class MemberControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 get("/api/members/profile")
-                        .param("email", "test@email.com")
+                        .param("memberId", "1")
                         .with(csrf())
         );
         //then
@@ -90,6 +94,7 @@ public class MemberControllerTest {
     void 멤버_프로필_수정_테스트() throws Exception {
         //given
         MemberInfo memberInfo = MemberInfo.builder()
+                .memberId(1L)
                 .email("test@email.com")
                 .memberName("tester")
                 .nickname("changedNick")
@@ -101,6 +106,7 @@ public class MemberControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 post("/api/members/profile")
+                        .header("X-Authorization-Id", "1")
                         .header("X-Authorization-User", "test@email.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)

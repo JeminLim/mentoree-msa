@@ -28,7 +28,7 @@ public class DataPreparation {
     @Autowired
     private BoardRepository boardRepository;
 
-    private Map<String, Object> entityMap = new HashMap<>();
+    private final Map<String, Object> entityMap = new HashMap<>();
 
     public Map<String, Object> getData() {
         init();

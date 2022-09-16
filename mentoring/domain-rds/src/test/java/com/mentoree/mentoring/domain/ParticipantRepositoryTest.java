@@ -89,7 +89,7 @@ public class ParticipantRepositoryTest {
         Program program = (Program) entity.get("programA");
         //when
         Participant result =
-                participantRepository.findApplicantByMemberIdAndProgramId(2L, program.getId());
+                participantRepository.findApplicantByMemberIdAndProgramId(program.getId(), 2L);
         //then
         assertThat(result).isNotNull();
     }

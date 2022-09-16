@@ -44,7 +44,7 @@ public class ReplyApiControllerTest {
 
     private Reply replyA;
     private Reply replyB;
-    private List<ReplyDto> replyList = new ArrayList<>();
+    private final List<ReplyDto> replyList = new ArrayList<>();
 
     @BeforeEach
     void setUp() {

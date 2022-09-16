@@ -13,7 +13,7 @@ import static com.mentoree.mentoring.domain.entity.QMission.*;
 
 public class BoardCustomRepositoryImpl implements BoardCustomRepository {
 
-    private JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
     public BoardCustomRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);

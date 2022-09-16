@@ -24,7 +24,7 @@ import java.util.Objects;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    private Logger paramLogger = LoggerFactory.getLogger("ErrorDetail");
+    private final Logger paramLogger = LoggerFactory.getLogger("ErrorDetail");
 
     @ExceptionHandler(IllegalStateException.class)
     protected ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {

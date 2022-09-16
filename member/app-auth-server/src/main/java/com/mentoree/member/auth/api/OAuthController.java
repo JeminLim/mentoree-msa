@@ -70,7 +70,7 @@ public class OAuthController {
     private final ObjectMapper objectMapper;
     private final Environment environment;
 
-    private EncryptUtils encryptUtils = new AESUtils();
+    private final EncryptUtils encryptUtils = new AESUtils();
 
     /** Constant */
     private final int validationTime = 60 * 60 * 2;
@@ -271,7 +271,7 @@ public class OAuthController {
                 .authId(oAuth2Id)
                 .memberName(name)
                 .email(email)
-                .nickname(provider.charAt(0) + "-" + UUID.randomUUID().toString())
+                .nickname(provider.charAt(0) + "-" + UUID.randomUUID())
                 .role(UserRole.USER)
                 .build();
         Member savedMember = memberRepository.save(member);
