@@ -1,0 +1,36 @@
+= Member Service REST API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+[[Member_API]]
+== Member API
+
+[[Member_조회]]
+=== 회원 정보 조회
+=== [GET] /member-service/api/members/profile
+include::{snippets}/get/api-members-profile/http-request.adoc[]
+include::{snippets}/get/api-members-profile/http-response.adoc[]
+=== Request
+include::{snippets}/get/api-members-profile/request-parameters.adoc[]
+
+=== Response
+include::{snippets}/get/api-members-profile/response-fields.adoc[]
+
+[[Member_수정]]
+=== 회원 정보 수정
+=== [POST] /member-service/api/members/profile
+include::{snippets}/post/api-members-profile/http-request.adoc[]
+include::{snippets}/post/api-members-profile/http-response.adoc[]
+=== Request
+include::{snippets}/post/api-members-profile/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-members-profile/response-fields.adoc[]

@@ -1,0 +1,41 @@
+= Reply Service REST API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+[[Reply_API]]
+== Reply API
+
+[[Reply_조회]]
+== 댓글 조회
+
+=== Endpoint
+[GET] /reply-service/api/replies/list
+include::{snippets}/get/api-replies-list/http-request.adoc[]
+include::{snippets}/get/api-replies-list/http-response.adoc[]
+
+=== Request
+include::{snippets}/get/api-replies-list/request-parameters.adoc[]
+
+=== Response
+include::{snippets}/get/api-replies-list/response-fields.adoc[]
+
+
+[[Reply_작성]]
+== 댓글 등록
+[POST] /reply-service/api/replies/new
+include::{snippets}/post/api-replies-new/http-request.adoc[]
+include::{snippets}/post/api-replies-new/http-response.adoc[]
+
+=== Request
+include::{snippets}/post/api-replies-new/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-replies-new/response-fields.adoc[]

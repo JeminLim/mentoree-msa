@@ -1,0 +1,206 @@
+= Mentoring Service REST API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+[[Program_관련_API]]
+= Program 관련 API
+
+[[Program_생성]]
+== 프로그램 생성
+=== Endpoint
+[POST] /mentoring-service/api/programs/new
+include::{snippets}/post/api-programs-new/http-request.adoc[]
+include::{snippets}/post/api-programs-new/http-response.adoc[]
+
+=== Request
+include::{snippets}/post/api-programs-new/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-programs-new/response-fields.adoc[]
+
+[[Program_리스트_요청]]
+== 프로그램 리스트 요청
+
+=== Endpoint
+[GET] /mentoring-service/api/programs/list
+include::{snippets}/get/api-programs-list/http-request.adoc[]
+include::{snippets}/get/api-programs-list/http-response.adoc[]
+
+=== Request
+include::{snippets}/get/api-programs-list/request-parameters.adoc[]
+
+=== Response
+include::{snippets}/get/api-programs-list/response-fields.adoc[]
+
+[[Program_추천_리스트_요청]]
+== 프로그램 추천 리스트 요청
+
+=== Endpoint
+[GET] /mentoring-service/api/programs/recommendations/list
+include::{snippets}/get/api-programs-recommendations-list/http-request.adoc[]
+include::{snippets}/get/api-programs-recommendations-list/http-response.adoc[]
+
+=== Request
+include::{snippets}/get/api-programs-recommendations-list/request-parameters.adoc[]
+
+=== Response
+include::{snippets}/get/api-programs-recommendations-list/response-fields.adoc[]
+
+[[Program_상세_정보]]
+== 프로그램 상세 정보 요청
+
+=== Endpoint
+[GET] /mentoring-service/api/programs/{programId}
+include::{snippets}/get/api-programs-programId/http-request.adoc[]
+include::{snippets}/get/api-programs-programId/http-response.adoc[]
+
+=== Request
+Request parameter required -> {programId}
+
+=== Response
+include::{snippets}/get/api-programs-programId/response-fields.adoc[]
+
+[[Program_참가_신청]]
+== 프로그램 참가 신청
+
+=== Endpoint
+[POST] /mentoring-service/api/programs/{programId}/join
+include::{snippets}/post/api-programs-programId-join/http-request.adoc[]
+include::{snippets}/post/api-programs-programId-join/http-response.adoc[]
+
+=== Request
+Request Parameter required -> {programId}
+
+=== Response
+include::{snippets}/post/api-programs-programId-join/response-fields.adoc[]
+
+[[Program_신청자_관리]]
+== 프로그램 신청자 관리
+
+=== Endpoint
+[GET] /mentoring-service/api/programs/{programId}/applicants
+include::{snippets}/get/api-programs-programId-applicants/http-request.adoc[]
+include::{snippets}/get/api-programs-programId-applicants/http-response.adoc[]
+
+=== Request
+Request Parameter required -> {programId}
+
+=== Response
+include::{snippets}/get/api-programs-programId-applicants/response-fields.adoc[]
+
+[[Program_신청_승인]]
+== 프로그램 신청 승인
+
+=== Endpoint
+[POST] /mentoring-service/api/programs/{programId}/applicants/accept
+include::{snippets}/post/api-programs-programId-applicants-accept/http-request.adoc[]
+include::{snippets}/post/api-programs-programId-applicants-accept/http-response.adoc[]
+
+=== Request
+Request Parameter required -> {programId}
+include::{snippets}/post/api-programs-programId-applicants-accept/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-programs-programId-applicants-accept/response-fields.adoc[]
+
+[[Program_신청_거절]]
+== 프로그램 신청 거절
+
+=== Endpoint
+[Post] /mentoring-service/api/programs/{programId}/applicants/reject
+include::{snippets}/post/api-programs-programId-applicants-reject/http-request.adoc[]
+include::{snippets}/post/api-programs-programId-applicants-reject/http-response.adoc[]
+
+=== Request
+Request Parameter required -> {programId}
+include::{snippets}/post/api-programs-programId-applicants-reject/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-programs-programId-applicants-reject/response-fields.adoc[]
+
+
+[[Mission_관련_API]]
+= Mission API
+
+[[Mission_리스트_요청]]
+== 미션 리스트 요청
+
+=== Endpoint
+[GET] /mentoring-service/api/missions/list
+include::{snippets}/get/api-missions-list/http-request.adoc[]
+include::{snippets}/get/api-missions-list/http-response.adoc[]
+
+=== Request
+include::{snippets}/get/api-missions-list/request-parameters.adoc[]
+
+=== Response
+include::{snippets}/get/api-missions-list/response-fields.adoc[]
+
+[[Mission_상세_정보]]
+== 미션 정보 요청
+
+=== Endpoint
+[GET] /mentoring-service/api/missions/{missionId}
+include::{snippets}/get/api-missions-missionId/http-request.adoc[]
+include::{snippets}/get/api-missions-missionId/http-response.adoc[]
+
+=== Request
+Request Parameter required -> {missionId}
+
+=== Response
+include::{snippets}/get/api-missions-missionId/response-fields.adoc[]
+
+[[Mission_등록]]
+== 미션 등록 요청
+
+=== Endpoint
+[POST] /mentoring-service/api/missions/new
+include::{snippets}/post/api-missions-new/http-request.adoc[]
+include::{snippets}/post/api-missions-new/http-response.adoc[]
+
+=== Request
+include::{snippets}/post/api-missions-new/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-missions-new/response-fields.adoc[]
+
+
+
+[[Board_관련_API]]
+= Board API
+
+[[Board_상세_정보]]
+== 게시판 열람
+
+=== Endpoint
+[GET] /mentoring-service/api/boards/{boardId}
+include::{snippets}/get/api-boards--boardId/http-request.adoc[]
+include::{snippets}/get/api-boards--boardId/http-response.adoc[]
+
+=== Request
+Request Parameter required -> {boardId}
+
+=== Response
+include::{snippets}/get/api-boards--boardId/response-fields.adoc[]
+
+[[Board_생성_요청]]
+== 게시판 등록
+
+=== Endpoint
+[POST] /mentoring-service/api/board/new
+include::{snippets}/post/api-boards-new/http-request.adoc[]
+include::{snippets}/post/api-boards-new/http-response.adoc[]
+
+=== Request
+include::{snippets}/post/api-boards-new/request-fields.adoc[]
+
+=== Response
+include::{snippets}/post/api-boards-new/response-fields.adoc[]
