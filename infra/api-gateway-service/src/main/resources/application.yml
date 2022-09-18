@@ -51,6 +51,7 @@ spring:
               - "/mentoring-service/api/programs/list/**"
               - "/mentoring-service/api/programs/{programId:\\d+}"
               - "/member-auth-service/auth/**"
+              - "/docs/**"
 
 eureka:
   client:
