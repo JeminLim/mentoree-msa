@@ -1,4 +1,4 @@
-package com.mentoree.mentoring.api.integration;
+package com.mentoree.mentoring.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +8,10 @@ import com.mentoree.MentoringApiApplication;
 import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.domain.entity.Board;
 import com.mentoree.mentoring.domain.entity.Mission;
+import com.mentoree.mentoring.domain.repository.BoardRepository;
+import com.mentoree.mentoring.domain.repository.MissionRepository;
+import com.mentoree.mentoring.domain.repository.ParticipantRepository;
+import com.mentoree.mentoring.domain.repository.ProgramRepository;
 import com.mentoree.mentoring.dto.BoardInfoDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,12 +63,21 @@ public class BoardApiTest {
     MockMvc mockMvc;
 
     @Autowired
+    ProgramRepository programRepository;
+    @Autowired
+    ParticipantRepository participantRepository;
+    @Autowired
+    MissionRepository missionRepository;
+    @Autowired
+    BoardRepository boardRepository;
     DataPreparation dataPreparation;
 
     Map<String, Object> data = new HashMap<>();
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
+        dataPreparation =
+                new DataPreparation(programRepository, participantRepository, missionRepository, boardRepository);
         data = dataPreparation.getData();
         ResponseMember clientResponse = new ResponseMember(3L, "testNick", Arrays.asList("LIFE"));
         String internalResponse = objectMapper.writeValueAsString(clientResponse);
@@ -94,7 +107,7 @@ public class BoardApiTest {
                 .andExpect(jsonPath("$.boardInfo.writerNickname").value(board.getNickname()))
                 .andExpect(jsonPath("$.boardInfo.content").value(board.getContent()))
                 .andDo(
-                        document("/get/api/boards/{boardId}",
+                        document("/get/api-boards--boardId",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
@@ -130,20 +143,16 @@ public class BoardApiTest {
         mockMvc.perform(
                         RestDocumentationRequestBuilders.post("/api/boards/new")
                                 .header("X-Authorization-Id", "1")
-                                .param("memberId", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
                                 .with(csrf())
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(
-                        document("/post/api/boards/new",
+                        document("/post/api-boards-new",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
-                                requestParameters (
-                                        parameterWithName("memberId").description("Login member pk"),
-                                        parameterWithName("_csrf").ignored()
-                                ), requestFields(
+                                requestFields(
                                         fieldWithPath("boardId").ignored(),
                                         fieldWithPath("missionId").description("Mission goal"),
                                         fieldWithPath("missionTitle").description("Mission title"),

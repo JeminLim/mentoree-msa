@@ -5,8 +5,6 @@ import com.mentoree.member.domain.entity.Member;
 import com.mentoree.member.domain.repository.MemberInterestRepository;
 import com.mentoree.member.domain.repository.MemberRepository;
 import com.mentoree.member.dto.MemberInfo;
-import com.netflix.discovery.converters.Auto;
-import org.apache.kafka.clients.producer.MockProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -49,12 +46,17 @@ public class MemberAppIntegrationTest {
     ObjectMapper objectMapper;
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    DataPreparation dataPreparation;
 
+    @Autowired
+    MemberRepository memberRepository;
+    @Autowired
+    MemberInterestRepository memberInterestRepository;
+
+    DataPreparation dataPreparation;
     Map<String, Object> data = new HashMap<>();
     @BeforeEach
     void setUp() {
+        dataPreparation = new DataPreparation(memberRepository, memberInterestRepository);
         data = dataPreparation.getData();
     }
 
@@ -77,7 +79,7 @@ public class MemberAppIntegrationTest {
                 .andExpect(jsonPath("$.interests[0]")
                         .value(testerA.getInterest().get(0).getCategory().getKey()))
                 .andDo(
-                        document("/get/api/members/profile",
+                        document("/get/api-members-profile",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestParameters(
@@ -119,7 +121,7 @@ public class MemberAppIntegrationTest {
         ).andExpect(status().isOk())
         .andExpect(jsonPath("$.result").value("success"))
         .andDo(
-                document("/post/api/members/profile",
+                document("/post/api-members-profile",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(

@@ -81,7 +81,7 @@ public class ReplyApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.replyList.size()").value(2))
                 .andDo(
-                        document("/get/api/replies/list",
+                        document("/get/api-replies-list",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestParameters (
@@ -119,7 +119,7 @@ public class ReplyApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(
-                        document("/post/api/replies/new",
+                        document("/post/api-replies-new",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestFields (
@@ -130,7 +130,13 @@ public class ReplyApiTest {
                                         fieldWithPath("content").description("Reply content"),
                                         fieldWithPath("modifiedDate").description("Reply modified time")
                                 ), responseFields(
-                                        fieldWithPath("result").description("Result of request")
+                                        fieldWithPath("result").description("Result of request"),
+                                        fieldWithPath("reply.replyId").description("Reply Id"),
+                                        fieldWithPath("reply.boardId").description("The board belonged"),
+                                        fieldWithPath("reply.writerId").description("Reply writer member pk"),
+                                        fieldWithPath("reply.writerNickname").description("Reply writer member nickname"),
+                                        fieldWithPath("reply.content").description("Reply content"),
+                                        fieldWithPath("reply.modifiedDate").description("Reply modified time")
                                 )
                         )
                 );

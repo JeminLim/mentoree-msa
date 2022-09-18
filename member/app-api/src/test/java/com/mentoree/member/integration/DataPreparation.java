@@ -6,13 +6,12 @@ import com.mentoree.member.domain.entity.MemberInterest;
 import com.mentoree.member.domain.entity.UserRole;
 import com.mentoree.member.domain.repository.MemberInterestRepository;
 import com.mentoree.member.domain.repository.MemberRepository;
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
+//@Component
 public class DataPreparation {
 
     @Autowired
@@ -20,10 +19,10 @@ public class DataPreparation {
     @Autowired
     private MemberInterestRepository memberInterestRepository;
 
-//    public DataPreparation(MemberRepository memberRepository, MemberInterestRepository memberInterestRepository) {
-//        this.memberInterestRepository = memberInterestRepository;
-//        this.memberRepository = memberRepository;
-//    }
+    public DataPreparation(MemberRepository memberRepository, MemberInterestRepository memberInterestRepository) {
+        this.memberInterestRepository = memberInterestRepository;
+        this.memberRepository = memberRepository;
+    }
     private final Map<String, Object> data = new HashMap<>();
     public Map<String, Object> getData() {
         init();

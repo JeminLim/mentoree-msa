@@ -1,4 +1,4 @@
-package com.mentoree.mentoring.api.integration;
+package com.mentoree.mentoring.integration;
 
 import com.mentoree.common.domain.Category;
 import com.mentoree.mentoring.domain.entity.*;
@@ -6,27 +6,27 @@ import com.mentoree.mentoring.domain.repository.BoardRepository;
 import com.mentoree.mentoring.domain.repository.MissionRepository;
 import com.mentoree.mentoring.domain.repository.ParticipantRepository;
 import com.mentoree.mentoring.domain.repository.ProgramRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class DataPreparation {
 
-    @Autowired
     private ProgramRepository programRepository;
-
-    @Autowired
     private ParticipantRepository participantRepository;
-
-    @Autowired
     private MissionRepository missionRepository;
-
-    @Autowired
     private BoardRepository boardRepository;
+
+    public DataPreparation(ProgramRepository programRepository,
+                           ParticipantRepository participantRepository,
+                           MissionRepository missionRepository,
+                           BoardRepository boardRepository) {
+        this.programRepository = programRepository;
+        this.participantRepository = participantRepository;
+        this.missionRepository = missionRepository;
+        this.boardRepository = boardRepository;
+    }
 
     private final Map<String, Object> entityMap = new HashMap<>();
 

@@ -26,8 +26,13 @@ Kafka:
 
   test:
     topic: member-profile-update-topic
+
 logging:
   level:
     org:
       hibernate:
         SQL: debug
+
+eureka:
+  client:
+    enabled: false

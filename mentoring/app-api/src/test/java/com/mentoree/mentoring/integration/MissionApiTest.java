@@ -1,4 +1,4 @@
-package com.mentoree.mentoring.api.integration;
+package com.mentoree.mentoring.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +9,10 @@ import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.domain.entity.Board;
 import com.mentoree.mentoring.domain.entity.Mission;
 import com.mentoree.mentoring.domain.entity.Program;
+import com.mentoree.mentoring.domain.repository.BoardRepository;
+import com.mentoree.mentoring.domain.repository.MissionRepository;
+import com.mentoree.mentoring.domain.repository.ParticipantRepository;
+import com.mentoree.mentoring.domain.repository.ProgramRepository;
 import com.mentoree.mentoring.dto.MissionInfoDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,12 +67,21 @@ public class MissionApiTest {
     MockMvc mockMvc;
 
     @Autowired
+    ProgramRepository programRepository;
+    @Autowired
+    ParticipantRepository participantRepository;
+    @Autowired
+    MissionRepository missionRepository;
+    @Autowired
+    BoardRepository boardRepository;
     DataPreparation dataPreparation;
 
     Map<String, Object> data = new HashMap<>();
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
+        dataPreparation =
+                new DataPreparation(programRepository, participantRepository, missionRepository, boardRepository);
         data = dataPreparation.getData();
         ResponseMember clientResponse = new ResponseMember(3L, "testNick", Arrays.asList("LIFE"));
         String internalResponse = objectMapper.writeValueAsString(clientResponse);
@@ -98,7 +111,7 @@ public class MissionApiTest {
                 .andExpect(jsonPath("$.missions[0].content").value(curMission.getContent()))
                 .andExpect(jsonPath("$.missions[0].dueDate").value(curMission.getDueDate().toString()))
                 .andDo(
-                        document("/get/api/missions/list",
+                        document("/get/api-missions-list",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestParameters (
@@ -138,7 +151,7 @@ public class MissionApiTest {
                 .andExpect(jsonPath("$.boardList[0].boardId").value(board.getId()))
                 .andExpect(jsonPath("$.boardList[0].writerNickname").value(board.getNickname()))
                 .andDo(
-                        document("/get/api/missions/missionId",
+                        document("/get/api-missions-missionId",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
@@ -181,20 +194,16 @@ public class MissionApiTest {
         mockMvc.perform(
                     RestDocumentationRequestBuilders.post("/api/missions/new")
                             .header("X-Authorization-Id", "1")
-                            .param("programId", program.getId().toString())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestBody)
                             .with(csrf())
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(
-                        document("/post/api/missions/new",
+                        document("/post/api-missions-new",
                                 preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestParameters (
-                                        parameterWithName("programId").description("Program pk to load missions"),
-                                        parameterWithName("_csrf").ignored()
-                                ), requestFields(
+                                preprocessResponse(prettyPrint())
+                                , requestFields(
                                         fieldWithPath("missionId").ignored(),
                                         fieldWithPath("programId").description("Program id that mission is belonged to"),
                                         fieldWithPath("missionTitle").description("Mission title"),

@@ -1,4 +1,4 @@
-package com.mentoree.mentoring.api.integration;
+package com.mentoree.mentoring.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,8 +7,11 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.mentoree.MentoringApiApplication;
 import com.mentoree.common.interenal.ResponseMember;
 import com.mentoree.mentoring.client.MemberClient;
-import com.mentoree.mentoring.domain.entity.Participant;
 import com.mentoree.mentoring.domain.entity.Program;
+import com.mentoree.mentoring.domain.repository.BoardRepository;
+import com.mentoree.mentoring.domain.repository.MissionRepository;
+import com.mentoree.mentoring.domain.repository.ParticipantRepository;
+import com.mentoree.mentoring.domain.repository.ProgramRepository;
 import com.mentoree.mentoring.dto.ApplyRequestDto;
 import com.mentoree.mentoring.dto.ProgramCreateDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,12 +72,22 @@ public class ProgramApiTest {
     MockMvc mockMvc;
 
     @Autowired
+    ProgramRepository programRepository;
+    @Autowired
+    ParticipantRepository participantRepository;
+    @Autowired
+    MissionRepository missionRepository;
+    @Autowired
+    BoardRepository boardRepository;
+
     DataPreparation dataPreparation;
 
     Map<String, Object> data = new HashMap<>();
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
+        dataPreparation =
+                new DataPreparation(programRepository, participantRepository, missionRepository, boardRepository);
         data = dataPreparation.getData();
         ResponseMember clientResponse = new ResponseMember(3L, "testNick", Arrays.asList("LIFE"));
         String internalResponse = objectMapper.writeValueAsString(clientResponse);
@@ -113,7 +126,7 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.participatedProgram.id").exists())
                 .andExpect(jsonPath("$.participatedProgram.title").value(requestForm.getTitle()))
                 .andDo(
-                        document("/post/api/programs/new",
+                        document("/post/api-programs-new",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestFields(
@@ -148,7 +161,7 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.programList[0].title").value("testProgram"))
                 .andExpect(jsonPath("$.hasNext").value(false))
                 .andDo(
-                        document("/get/api/programs/list",
+                        document("/get/api-programs-list",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestParameters(
@@ -187,7 +200,7 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.recommendProgramList[0].title").value("testProgramB"))
                 .andExpect(jsonPath("$.hasNext").value(false))
                 .andDo(
-                        document("/get/api/programs/recommendations/list",
+                        document("/get/api-programs-recommendations-list",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestParameters(
@@ -230,7 +243,7 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.programInfo.mentor.size()").value(0))
                 .andExpect(jsonPath("$.isHost").value(true))
                 .andDo(
-                        document("/get/api/programs/programId",
+                        document("/get/api-programs-programId",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
@@ -268,7 +281,7 @@ public class ProgramApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(
-                        document("/post/api/programs/programId/join",
+                        document("/post/api-programs-programId-join",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
@@ -295,8 +308,7 @@ public class ProgramApiTest {
         Program programA = (Program) data.get("programA");
         mockMvc.perform(
                         RestDocumentationRequestBuilders.get("/api/programs/{programId}/applicants", 1L)
-                                .header("X-Authorization-Id", "1")
-                                .param("memberId", "1"))
+                                .header("X-Authorization-Id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.programInfo.title").value(programA.getTitle()))
                 .andExpect(jsonPath("$.programInfo.id").value(programA.getId()))
@@ -306,14 +318,11 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.applicants[0].message").value("want to join"))
                 .andExpect(jsonPath("$.curNum").value("1"))
                 .andDo(
-                        document("/get/api/programs/programId/applicants",
+                        document("/get/api-programs-programId-applicants",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
                                         parameterWithName("programId").description("Program pk want to get")
-                                ),
-                                requestParameters(
-                                        parameterWithName("memberId").description("Login member pk")
                                 ),
                                 responseFields(
                                         fieldWithPath("programInfo").description("Program information"),
@@ -354,7 +363,7 @@ public class ProgramApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(
-                        document("/post/api/programs/programId/applicants/accept",
+                        document("/post/api-programs-programId-applicants-accept",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
@@ -392,7 +401,7 @@ public class ProgramApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"))
                 .andDo(
-                        document("/post/api/programs/programId/applicants/reject",
+                        document("/post/api-programs-programId-applicants-reject",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(

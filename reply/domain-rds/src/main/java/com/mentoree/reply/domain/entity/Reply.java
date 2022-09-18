@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode
 public class Reply extends BaseTimeEntity {
 
     @Id
