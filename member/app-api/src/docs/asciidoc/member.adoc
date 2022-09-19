@@ -14,10 +14,12 @@ endif::[]
 == Member API
 
 [[Member_조회]]
-=== 회원 정보 조회
-=== [GET] /member-service/api/members/profile
+== 회원 정보 조회
+=== Endpoint
+[GET] /member-service/api/members/profile
 include::{snippets}/get/api-members-profile/http-request.adoc[]
 include::{snippets}/get/api-members-profile/http-response.adoc[]
+
 === Request
 include::{snippets}/get/api-members-profile/request-parameters.adoc[]
 
@@ -25,10 +27,12 @@ include::{snippets}/get/api-members-profile/request-parameters.adoc[]
 include::{snippets}/get/api-members-profile/response-fields.adoc[]
 
 [[Member_수정]]
-=== 회원 정보 수정
-=== [POST] /member-service/api/members/profile
+== 회원 정보 수정
+=== Endpoint
+[POST] /member-service/api/members/profile
 include::{snippets}/post/api-members-profile/http-request.adoc[]
 include::{snippets}/post/api-members-profile/http-response.adoc[]
+
 === Request
 include::{snippets}/post/api-members-profile/request-fields.adoc[]
 
