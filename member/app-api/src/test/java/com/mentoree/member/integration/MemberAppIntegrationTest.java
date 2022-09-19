@@ -79,6 +79,7 @@ public class MemberAppIntegrationTest {
                 .andExpect(jsonPath("$.nickname").value(testerA.getNickname()))
                 .andExpect(jsonPath("$.interests[0]")
                         .value(testerA.getInterest().get(0).getCategory().getKey()))
+                // 디버깅 라인 찾기
                 .andDo(
                         document("/get/api-members-profile",
                                 preprocessRequest(prettyPrint()),
@@ -121,6 +122,7 @@ public class MemberAppIntegrationTest {
                         .with(csrf())
         ).andExpect(status().isOk())
         .andExpect(jsonPath("$.result").value("success"))
+                // 디버깅 라인 찾기
         .andDo(
                 document("/post/api-members-profile",
                         preprocessRequest(prettyPrint()),
