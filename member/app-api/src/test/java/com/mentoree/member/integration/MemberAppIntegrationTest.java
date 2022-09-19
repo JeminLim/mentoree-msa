@@ -80,23 +80,23 @@ public class MemberAppIntegrationTest {
                 .andExpect(jsonPath("$.nickname").value(testerA.getNickname()))
                 .andExpect(jsonPath("$.interests[0]")
                         .value(testerA.getInterest().get(0).getCategory().getKey()))
-                .andDo(print())
-                .andDo(
-                        document("/get/api-members-profile",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestParameters(
-                                       parameterWithName("memberId").description("Target user id")
-                                ),
-                                responseFields(
-                                        fieldWithPath("memberId").description("The user's id"),
-                                        fieldWithPath("email").description("The user's email address"),
-                                        fieldWithPath("memberName").description("The user's name"),
-                                        fieldWithPath("nickname").description("The user's nickname"),
-                                        fieldWithPath("interests").description("An array of the user's interested category"),
-                                        fieldWithPath("link").description("Self-description with user's career")
-                                )
-                        ));
+                .andDo(print());
+//                .andDo(
+//                        document("/get/api-members-profile",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestParameters(
+//                                       parameterWithName("memberId").description("Target user id")
+//                                ),
+//                                responseFields(
+//                                        fieldWithPath("memberId").description("The user's id"),
+//                                        fieldWithPath("email").description("The user's email address"),
+//                                        fieldWithPath("memberName").description("The user's name"),
+//                                        fieldWithPath("nickname").description("The user's nickname"),
+//                                        fieldWithPath("interests").description("An array of the user's interested category"),
+//                                        fieldWithPath("link").description("Self-description with user's career")
+//                                )
+//                        ));
     }
 
     @Test
@@ -123,28 +123,28 @@ public class MemberAppIntegrationTest {
                         .with(csrf())
         ).andExpect(status().isOk())
         .andExpect(jsonPath("$.result").value("success"))
-        .andDo(print())
-        .andDo(
-                document("/post/api-members-profile",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("memberId").description("The user's id"),
-                                fieldWithPath("email").description("The user's email address(Immutable)"),
-                                fieldWithPath("memberName").description("The user's name(Immutable)"),
-                                fieldWithPath("nickname").description("Changed user nickname"),
-                                fieldWithPath("interests").description("An array of changed category the user's interested in"),
-                                fieldWithPath("link").description("Changed self-description with user's career")
-                        ),
-                        responseFields(
-                                fieldWithPath("result").description("Result of request - success or failed"),
-                                fieldWithPath("memberInfo.memberId").description("Updated user id"),
-                                fieldWithPath("memberInfo.email").description("Updated user email"),
-                                fieldWithPath("memberInfo.memberName").description("Updated user member's name"),
-                                fieldWithPath("memberInfo.nickname").description("Updated user nickname"),
-                                fieldWithPath("memberInfo.interests").description("Updated user interests"),
-                                fieldWithPath("memberInfo.link").description("Updated user self-description")
-                        )
-                ));
+        .andDo(print());
+//        .andDo(
+//                document("/post/api-members-profile",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        requestFields(
+//                                fieldWithPath("memberId").description("The user's id"),
+//                                fieldWithPath("email").description("The user's email address(Immutable)"),
+//                                fieldWithPath("memberName").description("The user's name(Immutable)"),
+//                                fieldWithPath("nickname").description("Changed user nickname"),
+//                                fieldWithPath("interests").description("An array of changed category the user's interested in"),
+//                                fieldWithPath("link").description("Changed self-description with user's career")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("result").description("Result of request - success or failed"),
+//                                fieldWithPath("memberInfo.memberId").description("Updated user id"),
+//                                fieldWithPath("memberInfo.email").description("Updated user email"),
+//                                fieldWithPath("memberInfo.memberName").description("Updated user member's name"),
+//                                fieldWithPath("memberInfo.nickname").description("Updated user nickname"),
+//                                fieldWithPath("memberInfo.interests").description("Updated user interests"),
+//                                fieldWithPath("memberInfo.link").description("Updated user self-description")
+//                        )
+//                ));
     }
 }
