@@ -57,7 +57,3 @@ deploy:
   deployment_group: mentoree-webservice-group
   region: ap-northeast-2
   wait-until-deployed: true
-notifications:
-  email:
-    recipients:
-    - wer0801@gmail.com
