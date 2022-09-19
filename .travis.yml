@@ -16,7 +16,7 @@ before_install:
 - mv application.yml ./infra/config-server/src/main/resources
 - mv bootstrap.yml ./infra/config-server/src/main/resources
 - mv apiEncryptionKey.jks ./infra/config-server
-script:
+install:
 - echo "> build api-gateway-service"
 - "./gradlew clean :infra-api-gateway-service:build"
 - echo "> build eureka-server"
