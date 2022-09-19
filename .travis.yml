@@ -18,19 +18,19 @@ before_install:
 - mv apiEncryptionKey.jks ./infra/config-server
 script:
 - echo "> build api-gateway-service"
-- "./gradlew :infra-api-gateway-service:build"
+- "./gradlew clean :infra-api-gateway-service:build"
 - echo "> build eureka-server"
-- "./gradlew :infra-eureka-server:build"
+- "./gradlew clean :infra-eureka-server:build"
 - echo "> build config-server"
-- "./gradlew :infra-config-server:build"
+- "./gradlew clean :infra-config-server:build"
 - echo "> build member-service"
-- "./gradlew :member-app-api:build"
+- "./gradlew clean :member-app-api:build"
 - echo "> build member-auth-servicee"
-- "./gradlew :member-app-auth-server:build"
+- "./gradlew clean :member-app-auth-server:build"
 - echo "> build mentoring-service"
-- "./gradlew :mentoring-app-api:build"
+- "./gradlew clean :mentoring-app-api:build"
 - echo "> build reply-service"
-- "./gradlew :reply-app-api:build"
+- "./gradlew clean :reply-app-api:build"
 before_deploy:
 - zip -r mentoree-webservice *
 - mkdir -p deploy
