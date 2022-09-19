@@ -32,6 +32,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -79,7 +80,7 @@ public class MemberAppIntegrationTest {
                 .andExpect(jsonPath("$.nickname").value(testerA.getNickname()))
                 .andExpect(jsonPath("$.interests[0]")
                         .value(testerA.getInterest().get(0).getCategory().getKey()))
-                // 디버깅 라인 찾기
+                .andDo(print())
                 .andDo(
                         document("/get/api-members-profile",
                                 preprocessRequest(prettyPrint()),
@@ -122,7 +123,7 @@ public class MemberAppIntegrationTest {
                         .with(csrf())
         ).andExpect(status().isOk())
         .andExpect(jsonPath("$.result").value("success"))
-                // 디버깅 라인 찾기
+        .andDo(print())
         .andDo(
                 document("/post/api-members-profile",
                         preprocessRequest(prettyPrint()),
