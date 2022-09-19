@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = MentoringApiApplication.class)
+@SpringBootTest(classes = MentoringApiApplication.class, properties = "spring.cloud.config.enabled=false")
 @AutoConfigureWireMock
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
