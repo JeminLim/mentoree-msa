@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureWireMock
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-@EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092"}, ports = { 9092 })
 @ExtendWith(RestDocumentationExtension.class)
 @Transactional
 public class BoardApiTest {
