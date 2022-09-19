@@ -24,8 +24,6 @@ import java.util.Objects;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    private final Logger paramLogger = LoggerFactory.getLogger("ErrorDetail");
-
     @ExceptionHandler(IllegalStateException.class)
     protected ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
         log.error("[IllegalStateException] error : {}" ,e.getMessage());
@@ -36,11 +34,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(BindingFailureException.class)
     protected ResponseEntity<ErrorResponse> handleBindingFailureException(BindingFailureException e) {
         BindingResult bindingResult = e.getBindingResult();
-        paramLogger.error("Binding failure : {}", Objects.requireNonNull(bindingResult.getTarget()).getClass().getSimpleName());
+        log.error("Binding failure : {}", Objects.requireNonNull(bindingResult.getTarget()).getClass().getSimpleName());
 
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            paramLogger.error("[Target field] - {}", fieldError.getField());
-            paramLogger.error("[Param input] - {}", fieldError.getRejectedValue());
+            log.error("[Target field] - {}", fieldError.getField());
+            log.error("[Param input] - {}", fieldError.getRejectedValue());
         }
         final ErrorResponse response = ErrorResponse.of(ErrorCode.ILLEGAL_PARAMS, bindingResult);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -49,13 +47,13 @@ public class GlobalControllerAdvice {
     @ExceptionHandler({InvalidFormatException.class, InvalidNullException.class})
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(MismatchedInputException e) {
 
-        paramLogger.warn("Parameter convert exception");
+        log.warn("Parameter convert exception");
 
         // 포멧 문제일 경우
         if(e instanceof InvalidFormatException) {
             InvalidFormatException exception = (InvalidFormatException) e;
-            paramLogger.error("User input : {}", exception.getValue());
-            paramLogger.error("Target type : {}", exception.getTargetType());
+            log.error("User input : {}", exception.getValue());
+            log.error("Target type : {}", exception.getTargetType());
 
             final ErrorResponse response = ErrorResponse.of(ErrorCode.ILLEGAL_PARAMS, exception.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -64,7 +62,7 @@ public class GlobalControllerAdvice {
         // null 값이 왔을 경우
         if(e instanceof InvalidNullException) {
             InvalidNullException exception = (InvalidNullException) e;
-            paramLogger.error("Invalid null occur : {}", exception.getPropertyName());
+            log.error("Invalid null occur : {}", exception.getPropertyName());
 
             final ErrorResponse response = ErrorResponse.of(ErrorCode.ILLEGAL_PARAMS);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
