@@ -7,17 +7,6 @@ buildscript {
         snippetsDir = file('build/generated-snippets')
     }
 
-    if(project.name.contains('app')) {
-
-        bootJar {
-            enabled = true
-        }
-
-        jar {
-            enabled = true
-        }
-    }
-
     repositories {
         mavenCentral()
     }
@@ -79,5 +68,6 @@ subprojects {
         testImplementation 'org.springframework.security:spring-security-test'
 
         runtimeOnly 'com.h2database:h2'
+
     }
 }

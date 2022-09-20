@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(controllers = ReplyApiController.class)
 public class ReplyApiControllerTest {

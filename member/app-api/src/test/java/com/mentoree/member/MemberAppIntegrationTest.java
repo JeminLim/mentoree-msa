@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.cloud.config.enabled=false")
+@SpringBootTest(classes = MemberApiApplication.class, properties = "spring.cloud.config.enabled=false")
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -67,25 +67,25 @@ public class MemberAppIntegrationTest {
         data = dataPreparation.getData();
     }
 
-//    @Test
-//    @WithMockUser(username="testA@email.com", password = "", roles = "USER")
-//    @DisplayName("프로필_요청")
-//    @Transactional
-//    void 프로필_요청() throws Exception {
-//
-//        Member testerA = (Member) data.get("memberA");
-//        mockMvc.perform(
-//                get("/api/members/profile")
-//                        .header("X-Authorization-Id", testerA.getId())
-//                        .param("memberId", testerA.getId().toString())
-//        )
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.email").value(testerA.getEmail()))
-//        .andExpect(jsonPath("$.memberName").value(testerA.getMemberName()))
-//        .andExpect(jsonPath("$.nickname").value(testerA.getNickname()))
-//        .andExpect(jsonPath("$.interests[0]")
-//                .value(testerA.getInterest().get(0).getCategory().getKey()))
-//        .andDo(print())
+    @Test
+    @WithMockUser(username="testA@email.com", password = "", roles = "USER")
+    @DisplayName("프로필_요청")
+    @Transactional
+    void 프로필_요청() throws Exception {
+
+        Member testerA = (Member) data.get("memberA");
+        mockMvc.perform(
+                get("/api/members/profile")
+                        .header("X-Authorization-Id", testerA.getId())
+                        .param("memberId", testerA.getId().toString())
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.email").value(testerA.getEmail()))
+        .andExpect(jsonPath("$.memberName").value(testerA.getMemberName()))
+        .andExpect(jsonPath("$.nickname").value(testerA.getNickname()))
+        .andExpect(jsonPath("$.interests[0]")
+                .value(testerA.getInterest().get(0).getCategory().getKey()))
+        .andDo(print());
 //        .andDo(
 //                document("/get/api-members-profile",
 //                        preprocessRequest(prettyPrint()),
@@ -102,33 +102,33 @@ public class MemberAppIntegrationTest {
 //                                fieldWithPath("link").description("Self-description with user's career")
 //                        )
 //                ));
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "testA@email.com", password="", roles = "USER")
-//    @DisplayName("프로필_수정_요청")
-//    @Transactional
-//    void 프로필_수정_요청() throws Exception {
-//        Member testerA = (Member) data.get("memberA");
-//        MemberInfo update = MemberInfo.builder()
-//                .memberId(testerA.getId())
-//                .memberName(testerA.getMemberName())
-//                .email(testerA.getEmail())
-//                .nickname("changedNickname")
-//                .interests(Arrays.asList("LIFE", "MUSIC", "EMPLOYMENT"))
-//                .link("this is testerA self description")
-//                .build();
-//        String requestBody = objectMapper.writeValueAsString(update);
-//
-//        mockMvc.perform(
-//                post("/api/members/profile")
-//                        .header("X-Authorization-Id", testerA.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(requestBody)
-//                        .with(csrf())
-//        ).andExpect(status().isOk())
-//        .andExpect(jsonPath("$.result").value("success"))
-//        .andDo(print())
+    }
+
+    @Test
+    @WithMockUser(username = "testA@email.com", password="", roles = "USER")
+    @DisplayName("프로필_수정_요청")
+    @Transactional
+    void 프로필_수정_요청() throws Exception {
+        Member testerA = (Member) data.get("memberA");
+        MemberInfo update = MemberInfo.builder()
+                .memberId(testerA.getId())
+                .memberName(testerA.getMemberName())
+                .email(testerA.getEmail())
+                .nickname("changedNickname")
+                .interests(Arrays.asList("LIFE", "MUSIC", "EMPLOYMENT"))
+                .link("this is testerA self description")
+                .build();
+        String requestBody = objectMapper.writeValueAsString(update);
+
+        mockMvc.perform(
+                post("/api/members/profile")
+                        .header("X-Authorization-Id", testerA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(csrf())
+        ).andExpect(status().isOk())
+        .andExpect(jsonPath("$.result").value("success"))
+        .andDo(print());
 //        .andDo(
 //                document("/post/api-members-profile",
 //                        preprocessRequest(prettyPrint()),
@@ -151,5 +151,5 @@ public class MemberAppIntegrationTest {
 //                                fieldWithPath("memberInfo.link").description("Updated user self-description")
 //                        )
 //                ));
-//    }
+    }
 }
