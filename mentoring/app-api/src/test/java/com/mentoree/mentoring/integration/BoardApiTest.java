@@ -108,23 +108,23 @@ public class BoardApiTest {
                 .andExpect(jsonPath("$.boardInfo.missionTitle").value(mission.getTitle()))
                 .andExpect(jsonPath("$.boardInfo.writerId").value(board.getMemberId()))
                 .andExpect(jsonPath("$.boardInfo.writerNickname").value(board.getNickname()))
-                .andExpect(jsonPath("$.boardInfo.content").value(board.getContent()))
-                .andDo(
-                        document("/get/api-boards--boardId",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("boardId").description("Board pk wants to get")
-                                ), responseFields(
-                                        fieldWithPath("boardInfo.boardId").description("Board pk"),
-                                        fieldWithPath("boardInfo.missionId").description("mission pk which the board is belong to"),
-                                        fieldWithPath("boardInfo.missionTitle").description("mission title which the board is belong to"),
-                                        fieldWithPath("boardInfo.writerId").description("Member pk who wrote the board"),
-                                        fieldWithPath("boardInfo.writerNickname").description("Member nickname who wrote the board"),
-                                        fieldWithPath("boardInfo.content").description("Board content")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.boardInfo.content").value(board.getContent()));
+//                .andDo(
+//                        document("/get/api-boards--boardId",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("boardId").description("Board pk wants to get")
+//                                ), responseFields(
+//                                        fieldWithPath("boardInfo.boardId").description("Board pk"),
+//                                        fieldWithPath("boardInfo.missionId").description("mission pk which the board is belong to"),
+//                                        fieldWithPath("boardInfo.missionTitle").description("mission title which the board is belong to"),
+//                                        fieldWithPath("boardInfo.writerId").description("Member pk who wrote the board"),
+//                                        fieldWithPath("boardInfo.writerNickname").description("Member nickname who wrote the board"),
+//                                        fieldWithPath("boardInfo.content").description("Board content")
+//                                )
+//                        )
+//                );
 
     }
 
@@ -150,23 +150,23 @@ public class BoardApiTest {
                                 .content(requestBody)
                                 .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("success"))
-                .andDo(
-                        document("/post/api-boards-new",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestFields(
-                                        fieldWithPath("boardId").ignored(),
-                                        fieldWithPath("missionId").description("Mission goal"),
-                                        fieldWithPath("missionTitle").description("Mission title"),
-                                        fieldWithPath("writerId").description("Writer member pk"),
-                                        fieldWithPath("writerNickname").description("Writer member nickname"),
-                                        fieldWithPath("content").description("Board content")
-                                ), responseFields(
-                                        fieldWithPath("result").description("Result of request")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.result").value("success"));
+//                .andDo(
+//                        document("/post/api-boards-new",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestFields(
+//                                        fieldWithPath("boardId").ignored(),
+//                                        fieldWithPath("missionId").description("Mission goal"),
+//                                        fieldWithPath("missionTitle").description("Mission title"),
+//                                        fieldWithPath("writerId").description("Writer member pk"),
+//                                        fieldWithPath("writerNickname").description("Writer member nickname"),
+//                                        fieldWithPath("content").description("Board content")
+//                                ), responseFields(
+//                                        fieldWithPath("result").description("Result of request")
+//                                )
+//                        )
+//                );
 
 
     }

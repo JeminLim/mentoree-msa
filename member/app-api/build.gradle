@@ -1,38 +1,38 @@
 plugins {
     id 'java'
-//    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 ext {
     set('springCloudVersion', "2021.0.1")
-//    snippetsDir = file('build/generated-snippets')
+    snippetsDir = file('build/generated-snippets')
 }
 
-//test {
-//    outputs.dir snippetsDir
-//    useJUnitPlatform()
-//}
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
 
-//bootJar {
-//    enabled = true
-//    dependsOn asciidoctor
-//    finalizedBy 'copyDocument'
-//}
+bootJar {
+    enabled = true
+    dependsOn asciidoctor
+    finalizedBy 'copyDocument'
+}
 
-//task copyDocument(type: Copy) {
-//    dependsOn bootJar
-//    from "${asciidoctor.outputDir}"
-//    into 'src/main/resources/static/docs'
-//}
+task copyDocument(type: Copy) {
+    dependsOn bootJar
+    from "${asciidoctor.outputDir}"
+    into 'src/main/resources/static/docs'
+}
 
-//asciidoctor {
-//    inputs.dir snippetsDir
-//    dependsOn test
-//}
-//
-//asciidoctor.doFirst {
-//    delete file('src/main/resources/static/docs')
-//}
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
 
 dependencyManagement {
     imports {

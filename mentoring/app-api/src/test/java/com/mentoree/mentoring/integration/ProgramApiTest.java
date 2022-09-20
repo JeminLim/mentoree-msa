@@ -127,27 +127,27 @@ public class ProgramApiTest {
                                 .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.participatedProgram.id").exists())
-                .andExpect(jsonPath("$.participatedProgram.title").value(requestForm.getTitle()))
-                .andDo(
-                        document("/post/api-programs-new",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestFields(
-                                        fieldWithPath("title").description("Program title to create"),
-                                        fieldWithPath("goal").description("Program goal"),
-                                        fieldWithPath("description").description("Program description"),
-                                        fieldWithPath("maxMember").description("Maximum member can be able to participate program"),
-                                        fieldWithPath("category").description("Program's category"),
-                                        fieldWithPath("dueDate").description("due date of recruitment"),
-                                        fieldWithPath("memberId").description("Member pk who apply to create program"),
-                                        fieldWithPath("memberNickname").description("Member's nickname"),
-                                        fieldWithPath("mentor").description("Program role wants to participate")
-                                ), responseFields(
-                                        fieldWithPath("participatedProgram.id").description("Created program id"),
-                                        fieldWithPath("participatedProgram.title").description("Created program title")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.participatedProgram.title").value(requestForm.getTitle()));
+//                .andDo(
+//                        document("/post/api-programs-new",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestFields(
+//                                        fieldWithPath("title").description("Program title to create"),
+//                                        fieldWithPath("goal").description("Program goal"),
+//                                        fieldWithPath("description").description("Program description"),
+//                                        fieldWithPath("maxMember").description("Maximum member can be able to participate program"),
+//                                        fieldWithPath("category").description("Program's category"),
+//                                        fieldWithPath("dueDate").description("due date of recruitment"),
+//                                        fieldWithPath("memberId").description("Member pk who apply to create program"),
+//                                        fieldWithPath("memberNickname").description("Member's nickname"),
+//                                        fieldWithPath("mentor").description("Program role wants to participate")
+//                                ), responseFields(
+//                                        fieldWithPath("participatedProgram.id").description("Created program id"),
+//                                        fieldWithPath("participatedProgram.title").description("Created program title")
+//                                )
+//                        )
+//                );
     }
 
     @Test
@@ -162,27 +162,27 @@ public class ProgramApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.programList.size()").value(2))
                 .andExpect(jsonPath("$.programList[0].title").value("testProgram"))
-                .andExpect(jsonPath("$.hasNext").value(false))
-                .andDo(
-                        document("/get/api-programs-list",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestParameters(
-                                        parameterWithName("page").description("Loaded page"),
-                                        parameterWithName("memberId").description("Login member pk. If this field is absent, return all programs regardless of participation")
-                                ), responseFields(
-                                        fieldWithPath("programList").description("Program info list regardless of user's interest"),
-                                        fieldWithPath("programList[].id").description("Program pk"),
-                                        fieldWithPath("programList[].title").description("Program title to create"),
-                                        fieldWithPath("programList[].goal").description("Program goal"),
-                                        fieldWithPath("programList[].description").description("Program description"),
-                                        fieldWithPath("programList[].maxMember").description("Maximum member can be able to participate program"),
-                                        fieldWithPath("programList[].category").description("Program's category"),
-                                        fieldWithPath("programList[].dueDate").description("due date of recruitment"),
-                                        fieldWithPath("programList[].mentor[]").description("List of mentor"),
-                                        fieldWithPath("hasNext").description("Whether next page is exist or not")
-                                )
-                        ));
+                .andExpect(jsonPath("$.hasNext").value(false));
+//                .andDo(
+//                        document("/get/api-programs-list",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestParameters(
+//                                        parameterWithName("page").description("Loaded page"),
+//                                        parameterWithName("memberId").description("Login member pk. If this field is absent, return all programs regardless of participation")
+//                                ), responseFields(
+//                                        fieldWithPath("programList").description("Program info list regardless of user's interest"),
+//                                        fieldWithPath("programList[].id").description("Program pk"),
+//                                        fieldWithPath("programList[].title").description("Program title to create"),
+//                                        fieldWithPath("programList[].goal").description("Program goal"),
+//                                        fieldWithPath("programList[].description").description("Program description"),
+//                                        fieldWithPath("programList[].maxMember").description("Maximum member can be able to participate program"),
+//                                        fieldWithPath("programList[].category").description("Program's category"),
+//                                        fieldWithPath("programList[].dueDate").description("due date of recruitment"),
+//                                        fieldWithPath("programList[].mentor[]").description("List of mentor"),
+//                                        fieldWithPath("hasNext").description("Whether next page is exist or not")
+//                                )
+//                        ));
     }
 
     @Test
@@ -201,27 +201,27 @@ public class ProgramApiTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.recommendProgramList.size()").value(1))
                 .andExpect(jsonPath("$.recommendProgramList[0].title").value("testProgramB"))
-                .andExpect(jsonPath("$.hasNext").value(false))
-                .andDo(
-                        document("/get/api-programs-recommendations-list",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestParameters(
-                                        parameterWithName("page").description("Loaded page"),
-                                        parameterWithName("memberId").description("Login member pk")
-                                ), responseFields(
-                                        fieldWithPath("recommendProgramList").description("Program info list regardless of user's interest"),
-                                        fieldWithPath("recommendProgramList[].id").description("Program pk"),
-                                        fieldWithPath("recommendProgramList[].title").description("Program title to create"),
-                                        fieldWithPath("recommendProgramList[].goal").description("Program goal"),
-                                        fieldWithPath("recommendProgramList[].description").description("Program description"),
-                                        fieldWithPath("recommendProgramList[].maxMember").description("Maximum member can be able to participate program"),
-                                        fieldWithPath("recommendProgramList[].category").description("Program's category"),
-                                        fieldWithPath("recommendProgramList[].dueDate").description("due date of recruitment"),
-                                        fieldWithPath("recommendProgramList[].mentor").description("List of mentor's info(pk, nickname)"),
-                                        fieldWithPath("hasNext").description("Whether next page is exist or not")
-                                )
-                        ));
+                .andExpect(jsonPath("$.hasNext").value(false));
+//                .andDo(
+//                        document("/get/api-programs-recommendations-list",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestParameters(
+//                                        parameterWithName("page").description("Loaded page"),
+//                                        parameterWithName("memberId").description("Login member pk")
+//                                ), responseFields(
+//                                        fieldWithPath("recommendProgramList").description("Program info list regardless of user's interest"),
+//                                        fieldWithPath("recommendProgramList[].id").description("Program pk"),
+//                                        fieldWithPath("recommendProgramList[].title").description("Program title to create"),
+//                                        fieldWithPath("recommendProgramList[].goal").description("Program goal"),
+//                                        fieldWithPath("recommendProgramList[].description").description("Program description"),
+//                                        fieldWithPath("recommendProgramList[].maxMember").description("Maximum member can be able to participate program"),
+//                                        fieldWithPath("recommendProgramList[].category").description("Program's category"),
+//                                        fieldWithPath("recommendProgramList[].dueDate").description("due date of recruitment"),
+//                                        fieldWithPath("recommendProgramList[].mentor").description("List of mentor's info(pk, nickname)"),
+//                                        fieldWithPath("hasNext").description("Whether next page is exist or not")
+//                                )
+//                        ));
     }
 
     @Test
@@ -244,25 +244,25 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.programInfo.description").value(program.getDescription()))
                 .andExpect(jsonPath("$.programInfo.dueDate").value(program.getDueDate().toString()))
                 .andExpect(jsonPath("$.programInfo.mentor.size()").value(0))
-                .andExpect(jsonPath("$.isHost").value(true))
-                .andDo(
-                        document("/get/api-programs-programId",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("programId").description("Program pk want to get")
-                                ), responseFields(
-                                        fieldWithPath("programInfo.id").description("Program pk"),
-                                        fieldWithPath("programInfo.title").description("Program title to create"),
-                                        fieldWithPath("programInfo.goal").description("Program goal"),
-                                        fieldWithPath("programInfo.description").description("Program description"),
-                                        fieldWithPath("programInfo.maxMember").description("Maximum member can be able to participate program"),
-                                        fieldWithPath("programInfo.category").description("Program's category"),
-                                        fieldWithPath("programInfo.dueDate").description("due date of recruitment"),
-                                        fieldWithPath("programInfo.mentor[]").description("List of mentor's info"),
-                                        fieldWithPath("isHost").description("Whether member who request is host of the program or not")
-                                )
-                        ));
+                .andExpect(jsonPath("$.isHost").value(true));
+//                .andDo(
+//                        document("/get/api-programs-programId",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("programId").description("Program pk want to get")
+//                                ), responseFields(
+//                                        fieldWithPath("programInfo.id").description("Program pk"),
+//                                        fieldWithPath("programInfo.title").description("Program title to create"),
+//                                        fieldWithPath("programInfo.goal").description("Program goal"),
+//                                        fieldWithPath("programInfo.description").description("Program description"),
+//                                        fieldWithPath("programInfo.maxMember").description("Maximum member can be able to participate program"),
+//                                        fieldWithPath("programInfo.category").description("Program's category"),
+//                                        fieldWithPath("programInfo.dueDate").description("due date of recruitment"),
+//                                        fieldWithPath("programInfo.mentor[]").description("List of mentor's info"),
+//                                        fieldWithPath("isHost").description("Whether member who request is host of the program or not")
+//                                )
+//                        ));
     }
 
     @Test
@@ -282,25 +282,25 @@ public class ProgramApiTest {
                                 .content(requestBody)
                                 .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("success"))
-                .andDo(
-                        document("/post/api-programs-programId-join",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("programId").description("Program pk want to get")
-                                ),
-                                requestFields(
-                                        fieldWithPath("memberId").description("Login member id"),
-                                        fieldWithPath("nickname").description("Login member nickname"),
-                                        fieldWithPath("programId").description("Program pk want to join"),
-                                        fieldWithPath("message").description("Left message to program's host"),
-                                        fieldWithPath("role").description("Program role want to join as")
-                                ),
-                                responseFields(
-                                        fieldWithPath("result").description("Result of request")
-                                )
-                        ));
+                .andExpect(jsonPath("$.result").value("success"));
+//                .andDo(
+//                        document("/post/api-programs-programId-join",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("programId").description("Program pk want to get")
+//                                ),
+//                                requestFields(
+//                                        fieldWithPath("memberId").description("Login member id"),
+//                                        fieldWithPath("nickname").description("Login member nickname"),
+//                                        fieldWithPath("programId").description("Program pk want to join"),
+//                                        fieldWithPath("message").description("Left message to program's host"),
+//                                        fieldWithPath("role").description("Program role want to join as")
+//                                ),
+//                                responseFields(
+//                                        fieldWithPath("result").description("Result of request")
+//                                )
+//                        ));
     }
 
     @Test
@@ -319,33 +319,33 @@ public class ProgramApiTest {
                 .andExpect(jsonPath("$.applicants[0].nickname").value("testNickB"))
                 .andExpect(jsonPath("$.applicants[0].programId").value(1))
                 .andExpect(jsonPath("$.applicants[0].message").value("want to join"))
-                .andExpect(jsonPath("$.curNum").value("1"))
-                .andDo(
-                        document("/get/api-programs-programId-applicants",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("programId").description("Program pk want to get")
-                                ),
-                                responseFields(
-                                        fieldWithPath("programInfo").description("Program information"),
-                                        fieldWithPath("programInfo.id").description("Program pk"),
-                                        fieldWithPath("programInfo.title").description("Program title to create"),
-                                        fieldWithPath("programInfo.goal").description("Program goal"),
-                                        fieldWithPath("programInfo.description").description("Program description"),
-                                        fieldWithPath("programInfo.maxMember").description("Maximum member can be able to participate program"),
-                                        fieldWithPath("programInfo.category").description("Program's category"),
-                                        fieldWithPath("programInfo.dueDate").description("due date of recruitment"),
-                                        fieldWithPath("programInfo.mentor[]").description("List of mentor's info"),
-                                        fieldWithPath("applicants").description("Applicants who applied to join in"),
-                                        fieldWithPath("applicants[].memberId").description("Applicant's member pk"),
-                                        fieldWithPath("applicants[].nickname").description("Applicant's nickname"),
-                                        fieldWithPath("applicants[].programId").description("Applied program pk"),
-                                        fieldWithPath("applicants[].message").description("Applicant's message left to host"),
-                                        fieldWithPath("applicants[].role").description("Role which applicant wants to take part in"),
-                                        fieldWithPath("curNum").description("Current number of member who joined")
-                                )
-                        ));
+                .andExpect(jsonPath("$.curNum").value("1"));
+//                .andDo(
+//                        document("/get/api-programs-programId-applicants",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("programId").description("Program pk want to get")
+//                                ),
+//                                responseFields(
+//                                        fieldWithPath("programInfo").description("Program information"),
+//                                        fieldWithPath("programInfo.id").description("Program pk"),
+//                                        fieldWithPath("programInfo.title").description("Program title to create"),
+//                                        fieldWithPath("programInfo.goal").description("Program goal"),
+//                                        fieldWithPath("programInfo.description").description("Program description"),
+//                                        fieldWithPath("programInfo.maxMember").description("Maximum member can be able to participate program"),
+//                                        fieldWithPath("programInfo.category").description("Program's category"),
+//                                        fieldWithPath("programInfo.dueDate").description("due date of recruitment"),
+//                                        fieldWithPath("programInfo.mentor[]").description("List of mentor's info"),
+//                                        fieldWithPath("applicants").description("Applicants who applied to join in"),
+//                                        fieldWithPath("applicants[].memberId").description("Applicant's member pk"),
+//                                        fieldWithPath("applicants[].nickname").description("Applicant's nickname"),
+//                                        fieldWithPath("applicants[].programId").description("Applied program pk"),
+//                                        fieldWithPath("applicants[].message").description("Applicant's message left to host"),
+//                                        fieldWithPath("applicants[].role").description("Role which applicant wants to take part in"),
+//                                        fieldWithPath("curNum").description("Current number of member who joined")
+//                                )
+//                        ));
     }
 
     @Test
@@ -364,26 +364,26 @@ public class ProgramApiTest {
                                 .content(requestBody)
                                 .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("success"))
-                .andDo(
-                        document("/post/api-programs-programId-applicants-accept",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("programId").description("Program pk want to get")
-                                ),
-                                requestFields(
-                                        fieldWithPath("memberId").description("Applicant member id"),
-                                        fieldWithPath("nickname").description("Applicant member nickname"),
-                                        fieldWithPath("programId").description("Program pk want to join"),
-                                        fieldWithPath("message").description("Left message to program's host"),
-                                        fieldWithPath("role").description("Program role want to join as")
-                                ),
-                                responseFields(
-                                        fieldWithPath("result").description("Result of user request")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.result").value("success"));
+//                .andDo(
+//                        document("/post/api-programs-programId-applicants-accept",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("programId").description("Program pk want to get")
+//                                ),
+//                                requestFields(
+//                                        fieldWithPath("memberId").description("Applicant member id"),
+//                                        fieldWithPath("nickname").description("Applicant member nickname"),
+//                                        fieldWithPath("programId").description("Program pk want to join"),
+//                                        fieldWithPath("message").description("Left message to program's host"),
+//                                        fieldWithPath("role").description("Program role want to join as")
+//                                ),
+//                                responseFields(
+//                                        fieldWithPath("result").description("Result of user request")
+//                                )
+//                        )
+//                );
     }
 
     @Test
@@ -402,26 +402,26 @@ public class ProgramApiTest {
                                 .content(requestBody)
                                 .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("success"))
-                .andDo(
-                        document("/post/api-programs-programId-applicants-reject",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("programId").description("Program pk want to get")
-                                ),
-                                requestFields(
-                                        fieldWithPath("memberId").description("Applicant member id"),
-                                        fieldWithPath("nickname").description("Applicant member nickname"),
-                                        fieldWithPath("programId").description("Program pk want to join"),
-                                        fieldWithPath("message").description("Left message to program's host"),
-                                        fieldWithPath("role").description("Program role want to join as")
-                                ),
-                                responseFields(
-                                        fieldWithPath("result").description("Result of user request")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.result").value("success"));
+//                .andDo(
+//                        document("/post/api-programs-programId-applicants-reject",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("programId").description("Program pk want to get")
+//                                ),
+//                                requestFields(
+//                                        fieldWithPath("memberId").description("Applicant member id"),
+//                                        fieldWithPath("nickname").description("Applicant member nickname"),
+//                                        fieldWithPath("programId").description("Program pk want to join"),
+//                                        fieldWithPath("message").description("Left message to program's host"),
+//                                        fieldWithPath("role").description("Program role want to join as")
+//                                ),
+//                                responseFields(
+//                                        fieldWithPath("result").description("Result of user request")
+//                                )
+//                        )
+//                );
     }
 
 }

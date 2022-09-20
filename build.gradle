@@ -11,6 +11,16 @@ buildscript {
         mavenCentral()
     }
 
+    if(project.name.contains('app')) {
+        bootJar {
+            enabled = true
+        }
+
+        jar {
+            enabled = true
+        }
+    }
+
     dependencies {
         classpath "$boot:spring-boot-gradle-plugin:$bootVersion"
         classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"

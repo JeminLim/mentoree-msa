@@ -112,25 +112,25 @@ public class MissionApiTest {
                 .andExpect(jsonPath("$.missions[0].missionTitle").value(curMission.getTitle()))
                 .andExpect(jsonPath("$.missions[0].missionGoal").value(curMission.getGoal()))
                 .andExpect(jsonPath("$.missions[0].content").value(curMission.getContent()))
-                .andExpect(jsonPath("$.missions[0].dueDate").value(curMission.getDueDate().toString()))
-                .andDo(
-                        document("/get/api-missions-list",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestParameters (
-                                        parameterWithName("programId").description("Program pk to load missions"),
-                                        parameterWithName("isOpen").description("Whether mission is able to conduct then true, otherwise false")
-                                ), responseFields(
-                                        fieldWithPath("missions[]").description("Mission list"),
-                                        fieldWithPath("missions[].programId").description("Program id that mission is belonged to"),
-                                        fieldWithPath("missions[].missionId").description("Mission pk"),
-                                        fieldWithPath("missions[].missionTitle").description("Mission title"),
-                                        fieldWithPath("missions[].missionGoal").description("Mission goal"),
-                                        fieldWithPath("missions[].content").description("Mission content"),
-                                        fieldWithPath("missions[].dueDate").description("Mission due date")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.missions[0].dueDate").value(curMission.getDueDate().toString()));
+//                .andDo(
+//                        document("/get/api-missions-list",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestParameters (
+//                                        parameterWithName("programId").description("Program pk to load missions"),
+//                                        parameterWithName("isOpen").description("Whether mission is able to conduct then true, otherwise false")
+//                                ), responseFields(
+//                                        fieldWithPath("missions[]").description("Mission list"),
+//                                        fieldWithPath("missions[].programId").description("Program id that mission is belonged to"),
+//                                        fieldWithPath("missions[].missionId").description("Mission pk"),
+//                                        fieldWithPath("missions[].missionTitle").description("Mission title"),
+//                                        fieldWithPath("missions[].missionGoal").description("Mission goal"),
+//                                        fieldWithPath("missions[].content").description("Mission content"),
+//                                        fieldWithPath("missions[].dueDate").description("Mission due date")
+//                                )
+//                        )
+//                );
     }
 
     @Test
@@ -152,31 +152,31 @@ public class MissionApiTest {
                 .andExpect(jsonPath("$.mission.dueDate").value(curMission.getDueDate().toString()))
                 .andExpect(jsonPath("$.boardList.size()").value(1))
                 .andExpect(jsonPath("$.boardList[0].boardId").value(board.getId()))
-                .andExpect(jsonPath("$.boardList[0].writerNickname").value(board.getNickname()))
-                .andDo(
-                        document("/get/api-missions-missionId",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("missionId").description("Mission pk want to get")
-                                ), responseFields(
-                                        fieldWithPath("mission").description("Mission list"),
-                                        fieldWithPath("mission.programId").description("Program id that mission is belonged to"),
-                                        fieldWithPath("mission.missionId").description("Mission pk"),
-                                        fieldWithPath("mission.missionTitle").description("Mission title"),
-                                        fieldWithPath("mission.missionGoal").description("Mission goal"),
-                                        fieldWithPath("mission.content").description("Mission content"),
-                                        fieldWithPath("mission.dueDate").description("Mission due date"),
-                                        fieldWithPath("boardList[]").description("Board list belong to current mission"),
-                                        fieldWithPath("boardList[].boardId").description("Board pk"),
-                                        fieldWithPath("boardList[].missionId").description("mission pk which the board is belong to"),
-                                        fieldWithPath("boardList[].missionTitle").description("mission title which the board is belong to"),
-                                        fieldWithPath("boardList[].writerId").description("Member pk who wrote the board"),
-                                        fieldWithPath("boardList[].writerNickname").description("Member nickname who wrote the board"),
-                                        fieldWithPath("boardList[].content").description("Board content")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.boardList[0].writerNickname").value(board.getNickname()));
+//                .andDo(
+//                        document("/get/api-missions-missionId",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                pathParameters(
+//                                        parameterWithName("missionId").description("Mission pk want to get")
+//                                ), responseFields(
+//                                        fieldWithPath("mission").description("Mission list"),
+//                                        fieldWithPath("mission.programId").description("Program id that mission is belonged to"),
+//                                        fieldWithPath("mission.missionId").description("Mission pk"),
+//                                        fieldWithPath("mission.missionTitle").description("Mission title"),
+//                                        fieldWithPath("mission.missionGoal").description("Mission goal"),
+//                                        fieldWithPath("mission.content").description("Mission content"),
+//                                        fieldWithPath("mission.dueDate").description("Mission due date"),
+//                                        fieldWithPath("boardList[]").description("Board list belong to current mission"),
+//                                        fieldWithPath("boardList[].boardId").description("Board pk"),
+//                                        fieldWithPath("boardList[].missionId").description("mission pk which the board is belong to"),
+//                                        fieldWithPath("boardList[].missionTitle").description("mission title which the board is belong to"),
+//                                        fieldWithPath("boardList[].writerId").description("Member pk who wrote the board"),
+//                                        fieldWithPath("boardList[].writerNickname").description("Member nickname who wrote the board"),
+//                                        fieldWithPath("boardList[].content").description("Board content")
+//                                )
+//                        )
+//                );
     }
 
     @Test
@@ -201,23 +201,23 @@ public class MissionApiTest {
                             .content(requestBody)
                             .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("success"))
-                .andDo(
-                        document("/post/api-missions-new",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint())
-                                , requestFields(
-                                        fieldWithPath("missionId").ignored(),
-                                        fieldWithPath("programId").description("Program id that mission is belonged to"),
-                                        fieldWithPath("missionTitle").description("Mission title"),
-                                        fieldWithPath("missionGoal").description("Mission goal"),
-                                        fieldWithPath("content").description("Mission content"),
-                                        fieldWithPath("dueDate").description("Mission due date")
-                                ), responseFields(
-                                        fieldWithPath("result").description("Result of request")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.result").value("success"));
+//                .andDo(
+//                        document("/post/api-missions-new",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint())
+//                                , requestFields(
+//                                        fieldWithPath("missionId").ignored(),
+//                                        fieldWithPath("programId").description("Program id that mission is belonged to"),
+//                                        fieldWithPath("missionTitle").description("Mission title"),
+//                                        fieldWithPath("missionGoal").description("Mission goal"),
+//                                        fieldWithPath("content").description("Mission content"),
+//                                        fieldWithPath("dueDate").description("Mission due date")
+//                                ), responseFields(
+//                                        fieldWithPath("result").description("Result of request")
+//                                )
+//                        )
+//                );
 
     }
 

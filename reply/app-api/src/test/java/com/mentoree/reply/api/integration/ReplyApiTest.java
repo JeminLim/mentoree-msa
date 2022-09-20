@@ -82,23 +82,23 @@ public class ReplyApiTest {
                         RestDocumentationRequestBuilders.get("/api/replies/list")
                                 .param("boardId", "1")
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.replyList.size()").value(2))
-                .andDo(
-                        document("/get/api-replies-list",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestParameters (
-                                        parameterWithName("boardId").description("Board pk for getting reply list")
-                                ), responseFields(
-                                        fieldWithPath("replyList").description("Reply list belonging to board"),
-                                        fieldWithPath("replyList[].replyId").description("Reply pk"),
-                                        fieldWithPath("replyList[].boardId").description("The board belonged"),
-                                        fieldWithPath("replyList[].writerId").description("Reply writer member pk"),
-                                        fieldWithPath("replyList[].writerNickname").description("Reply writer member nickname"),
-                                        fieldWithPath("replyList[].content").description("Reply content"),
-                                        fieldWithPath("replyList[].modifiedDate").description("Reply modified time")
-                                )
-                ));
+                .andExpect(jsonPath("$.replyList.size()").value(2));
+//                .andDo(
+//                        document("/get/api-replies-list",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestParameters (
+//                                        parameterWithName("boardId").description("Board pk for getting reply list")
+//                                ), responseFields(
+//                                        fieldWithPath("replyList").description("Reply list belonging to board"),
+//                                        fieldWithPath("replyList[].replyId").description("Reply pk"),
+//                                        fieldWithPath("replyList[].boardId").description("The board belonged"),
+//                                        fieldWithPath("replyList[].writerId").description("Reply writer member pk"),
+//                                        fieldWithPath("replyList[].writerNickname").description("Reply writer member nickname"),
+//                                        fieldWithPath("replyList[].content").description("Reply content"),
+//                                        fieldWithPath("replyList[].modifiedDate").description("Reply modified time")
+//                                )
+//                ));
     }
 
     @Test
@@ -120,29 +120,29 @@ public class ReplyApiTest {
                                 .content(requestBody)
                                 .with(csrf())
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("success"))
-                .andDo(
-                        document("/post/api-replies-new",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestFields (
-                                        fieldWithPath("replyId").ignored(),
-                                        fieldWithPath("boardId").description("The board belonged"),
-                                        fieldWithPath("writerId").description("Reply writer member pk"),
-                                        fieldWithPath("writerNickname").description("Reply writer member nickname"),
-                                        fieldWithPath("content").description("Reply content"),
-                                        fieldWithPath("modifiedDate").description("Reply modified time")
-                                ), responseFields(
-                                        fieldWithPath("result").description("Result of request"),
-                                        fieldWithPath("reply.replyId").description("Reply Id"),
-                                        fieldWithPath("reply.boardId").description("The board belonged"),
-                                        fieldWithPath("reply.writerId").description("Reply writer member pk"),
-                                        fieldWithPath("reply.writerNickname").description("Reply writer member nickname"),
-                                        fieldWithPath("reply.content").description("Reply content"),
-                                        fieldWithPath("reply.modifiedDate").description("Reply modified time")
-                                )
-                        )
-                );
+                .andExpect(jsonPath("$.result").value("success"));
+//                .andDo(
+//                        document("/post/api-replies-new",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                requestFields (
+//                                        fieldWithPath("replyId").ignored(),
+//                                        fieldWithPath("boardId").description("The board belonged"),
+//                                        fieldWithPath("writerId").description("Reply writer member pk"),
+//                                        fieldWithPath("writerNickname").description("Reply writer member nickname"),
+//                                        fieldWithPath("content").description("Reply content"),
+//                                        fieldWithPath("modifiedDate").description("Reply modified time")
+//                                ), responseFields(
+//                                        fieldWithPath("result").description("Result of request"),
+//                                        fieldWithPath("reply.replyId").description("Reply Id"),
+//                                        fieldWithPath("reply.boardId").description("The board belonged"),
+//                                        fieldWithPath("reply.writerId").description("Reply writer member pk"),
+//                                        fieldWithPath("reply.writerNickname").description("Reply writer member nickname"),
+//                                        fieldWithPath("reply.content").description("Reply content"),
+//                                        fieldWithPath("reply.modifiedDate").description("Reply modified time")
+//                                )
+//                        )
+//                );
 
 
     }
