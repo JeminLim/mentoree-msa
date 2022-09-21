@@ -13,8 +13,6 @@ config-info.tar
 Mentoree-docker-compose-infra-local.yml
 Mentoree-docker-compose-service-local.yml
 
-**/src/main/resources/static/docs/*.html
-
 ##oauth##
 !**/src/main/resources/application-oauth.yml
 

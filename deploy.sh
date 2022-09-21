@@ -43,8 +43,6 @@ sudo docker build -t ${DOCKER_USER_ID}/infra-eureka-server:${APP_VERSION} .
 
 echo ">>> Docker file 위치 - ${MEMBER_SERVICE_DIR}"
 cd ${MEMBER_SERVICE_DIR}
-echo ">>> Rest document 이동 ..."
-sudo mv ./src/main/resources/static/docs/member.html ../../infra/api-gateway-service/src/main/resources/static/docs
 echo ">>> Member service 이미지 빌드"
 sudo docker rmi ${DOCKER_USER_ID}/member-service:${APP_VERSION}
 sudo docker build -t ${DOCKER_USER_ID}/member-service:${APP_VERSION} .
@@ -57,16 +55,12 @@ sudo docker build -t ${DOCKER_USER_ID}/member-auth-service:${APP_VERSION} .
 
 echo ">>> Docker file 위치 - ${MENTORING_SERVICE_DIR}"
 cd ${MENTORING_SERVICE_DIR}
-echo ">>> Rest document 이동 ..."
-sudo mv ./src/main/resources/static/docs/mentoring.html ../../infra/api-gateway-service/src/main/resources/static/docs
 echo ">>> Mentoring service 이미지 빌드"
 sudo docker rmi ${DOCKER_USER_ID}/mentoring-service:${APP_VERSION}
 sudo docker build -t ${DOCKER_USER_ID}/mentoring-service:${APP_VERSION} .
 
 echo ">>> Docker file 위치 - ${REPLY_SERVICE_DIR}"
 cd ${REPLY_SERVICE_DIR}
-echo ">>> Rest document 이동 ..."
-sudo mv ./src/main/resources/static/docs/reply.html ../../infra/api-gateway-service/src/main/resources/static/docs
 echo ">>> Reply service 이미지 빌드"
 sudo docker rmi ${DOCKER_USER_ID}/reply-service:${APP_VERSION}
 sudo docker build -t ${DOCKER_USER_ID}/reply-service:${APP_VERSION} .
